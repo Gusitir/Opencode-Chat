@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { renderMarkdown } from '../markdown/renderer';
   import type { MessagePart } from '../../../src/messaging/types';
 
   interface Props {
@@ -7,12 +8,14 @@
   }
 
   let { role, parts } = $props();
-</script>
+
 
 <div class="message {role}">
   {#each parts as part (part.kind)}
     {#if part.kind === 'text'}
-      <p>{part.text}</p>
+      <div class="text">
+        {@html renderMarkdown(part.text)}
+      </div>
     {:else if part.kind === 'tool_call'}
       <div class="tool-call">
         <strong>{part.name}</strong>
@@ -44,9 +47,25 @@
     max-width: 100%;
   }
 
-  p {
+  .text {
     margin: 0;
     line-height: 1.5;
+  }
+
+  .text :global(p) {
+    margin: 0 0 8px 0;
+  }
+
+  .text :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .text :global(code) {
+    background-color: var(--input-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    font-family: monospace;
   }
 
   .tool-call {
