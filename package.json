@@ -1,0 +1,59 @@
+{
+  "name": "opencode-chat",
+  "displayName": "Opencode Chat",
+  "description": "Native chat UI for OpenCode AI coding agent",
+  "version": "0.1.0",
+  "publisher": "Gusitir",
+  "engines": { "vscode": "^1.85.0", "node": ">=18.0.0" },
+  "categories": ["AI", "Chat", "Other"],
+  "icon": "media/icon.png",
+  "repository": { "type": "git", "url": "https://github.com/Gusitir/Opencode-Chat.git" },
+  "license": "MIT",
+  "main": "./dist/extension.js",
+  "activationEvents": ["onView:opencodeChat.view"],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        { "id": "opencodeChat", "title": "Opencode Chat", "icon": "media/activity-bar.svg" }
+      ]
+    },
+    "views": {
+      "opencodeChat": [
+        { "id": "opencodeChat.view", "name": "Chat", "type": "webview" }
+      ]
+    },
+    "commands": [
+      { "command": "opencodeChat.openChat", "title": "Opencode: Open Chat" },
+      { "command": "opencodeChat.newSession", "title": "Opencode: New Session" },
+      { "command": "opencodeChat.addSelectionToPrompt", "title": "Opencode: Add Selection to Prompt" },
+      { "command": "opencodeChat.installCli", "title": "Opencode: Install CLI" }
+    ],
+    "menus": {
+      "editor/context": [
+        { "command": "opencodeChat.addSelectionToPrompt", "when": "editorHasSelection", "group": "1_modification" }
+      ]
+    },
+    "configuration": {
+      "title": "Opencode Chat",
+      "properties": {
+        "opencodeChat.cliPath": { "type": "string", "default": "opencode", "description": "Path to opencode binary" },
+        "opencodeChat.serverPort": { "type": "number", "default": 0, "description": "0 = random free port" },
+        "opencodeChat.defaultModel": { "type": "string", "default": "", "description": "provider/model format" },
+        "opencodeChat.autoApproveTools": { "type": "array", "items": { "type": "string" }, "default": [] }
+      }
+    }
+  },
+  "scripts": {
+    "build:host": "esbuild ./src/extension.ts --bundle --platform=node --target=node18 --external:vscode --format=cjs --outfile=dist/extension.js",
+    "build:webview": "vite build",
+    "build": "pnpm build:host && pnpm build:webview",
+    "watch:host": "pnpm build:host --watch",
+    "watch:webview": "vite build --watch",
+    "dev": "pnpm build && concurrently \"pnpm watch:host\" \"pnpm watch:webview\"",
+    "test": "vitest run",
+    "test:e2e": "node ./out/tests/runE2E.js",
+    "package": "vsce package --no-dependencies",
+    "publish:vsce": "vsce publish --no-dependencies",
+    "publish:ovsx": "ovsx publish --no-dependencies"
+  }
+}
