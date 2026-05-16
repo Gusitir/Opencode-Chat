@@ -1,43 +1,114 @@
 # HAIKU_BLOCKERS.md
 
-Estado: **RESUELTO** — proceder con 0.3 → 0.8 normal.
+Estado: **AUDITORÍA OPUS — 3 BUGS A CORREGIR ANTES DE FASE 2.3**
+
+Resumen: 15 tareas completadas (0.1–0.8, 1.1–1.5, 2.1–2.2). Build pasa. Pero auditoría detectó bugs runtime que romperán Fase 1.5 (webview "Hello") al ejecutar. Arreglar antes de 2.3.
 
 ---
 
-## Resolución (sesión Opus 2026-05-16)
+## Tarea AUDIT-1 (CRÍTICA): vite output path mismatch
 
-### Cambios aplicados
+**Síntoma esperado**: F5 → sidebar carga, panel vacío, OutputChannel `ENOENT dist/webview/index.html`.
 
-1. **`AGENT.md` sección E.1**: añadido bloque `devDependencies` completo con versiones pinneadas según sección B. Todas las libs van en `devDependencies` (no `dependencies`) porque `vsce package --no-dependencies` skipea `node_modules` y todo se bundlea (esbuild para el host, Vite para el webview).
+**Causa**: `vite.config.mjs` usa `rollupOptions.input: 'webview/index.html'`. Rollup preserva la ruta del input → escribe a `dist/webview/webview/index.html`. ChatViewProvider lee `dist/webview/index.html`.
 
-2. **`package.json` (worktree)**: añadido el mismo bloque `devDependencies` + campo `pnpm.onlyBuiltDependencies`.
+**Fix**: en `vite.config.mjs` cambiar a:
+```js
+import { defineConfig } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
 
-3. **`.npmrc`**: añadida línea `verify-deps-before-run=false` para evitar que pnpm 11 reejecute install antes de cada comando.
+export default defineConfig({
+  plugins: [svelte()],
+  root: 'webview',
+  base: './',
+  build: {
+    outDir: '../dist/webview',
+    emptyOutDir: true,
+  },
+});
+```
 
-4. **`pnpm-workspace.yaml`** (archivo NUEVO, no estaba en AGENT.md D): pnpm 11 lo creó automáticamente para gestionar permisos de build scripts. Contenido:
-   ```yaml
-   allowBuilds:
-     '@vscode/vsce-sign': true
-     esbuild: true
-     keytar: true
-   ```
-   Sin esto, `pnpm install` deja warnings que pnpm 11 trata como error en `runDepsStatusCheck`. **NO borrar**.
+**Done when**:
+- `pnpm build` produce `dist/webview/index.html` (sin doble carpeta).
+- `find dist -type f` muestra: `dist/webview/index.html`, `dist/webview/assets/*`.
 
-5. **`@types/node ^18.0.0`**: añadido a devDependencies aunque no estaba en AGENT.md sección B. Necesario porque target host es `node18` y se usarán `child_process`, `net`, `crypto`, etc. en Fase 2.
+**Commit**: `fix: vite output path for webview`
 
-### Verificación
+---
 
-- `pnpm install` → OK (562 packages, build scripts ejecutados).
-- `pnpm tsc -p tsconfig.extension.json --noEmit` → exit 0.
-- `pnpm tsc -p tsconfig.webview.json --noEmit` → exit 0.
+## Tarea AUDIT-2 (CRÍTICA): Svelte 5 mount API
 
-### Next para Haiku
+**Síntoma esperado**: webview muestra error en consola devtools del Extension Host, app no monta.
 
-- Tarea **0.3** ya cumple su `Done when`. Si los tsconfigs y placeholders existentes son correctos, marcar `[x]` 0.3 con commit `chore: add tsconfig`.
-- Continuar con **0.4** (`esbuild.config.mjs`) → **0.8**.
-- En 0.8 (`pnpm install`): ya está instalado, sólo verificar que no haya cambios y commit como `chore: install dependencies` puede saltarse — o hacer commit vacío con `--allow-empty` si querés mantener la trazabilidad del PLAN.
+**Causa**: `webview/main.ts` usa la API de Svelte 4:
+```ts
+const app = new App({ target: document.getElementById('app')! });
+```
 
-### Notas de Opus para futuras fases (no bloqueante, informativo)
+Svelte 5 deprecó constructor mode. PLAN.md 1.5 explícitamente requiere `mount(App, {...})`.
 
-- **Fase 2.4 (SSE)**: AGENT.md menciona `eventsource` package no listado en tabla B. **Recomendación Opus**: usar `undici` (ya transitivo) con `fetch` streaming en vez de añadir `eventsource`. Si Haiku llega a 2.4 sin instrucciones, pausar y preguntar.
-- **`@opencode-ai/sdk`**: versión instalada `1.15.0` (semver mayor a `^1.1.18`). Compatible. Si la API cambió, ajustar en Fase 2.3.
+**Fix**: reemplazar `webview/main.ts` por:
+```ts
+import { mount } from 'svelte';
+import App from './App.svelte';
+
+const app = mount(App, {
+  target: document.getElementById('app')!,
+});
+
+export default app;
+```
+
+**Done when**:
+- `pnpm build` pasa.
+- F5 abre Extension Development Host, sidebar muestra "Opencode Chat — initializing…" sin errores en consola devtools.
+
+**Commit**: `fix: use svelte 5 mount api`
+
+---
+
+## Tarea AUDIT-3 (MEDIA): nonce con CSPRNG
+
+**Causa**: `src/providers/ChatViewProvider.ts:35-40` usa `Math.random()` para generar nonce CSP. No es criptográficamente seguro. CSP nonces deben usar CSPRNG.
+
+**Fix**: reemplazar método `getNonce` por:
+```ts
+import { randomBytes } from 'crypto';
+// ...
+private getNonce(): string {
+  return randomBytes(16).toString('base64');
+}
+```
+
+**Done when**: nonces ahora son `crypto.randomBytes`. `pnpm tsc -p tsconfig.extension.json --noEmit` pasa.
+
+**Commit**: `fix: use crypto-strong nonce for csp`
+
+---
+
+## Tarea AUDIT-4 (BAJA): limpiar comment en extension.ts
+
+**Causa**: `src/extension.ts:29` contiene `// Server will be started in task 2.5`. AGENT.md F.2: prohibido comentarios salvo workaround documentado.
+
+**Fix**: borrar la línea del comment, dejar el `try/catch` limpio.
+
+**Done when**: archivo sin ese comment.
+
+**Commit**: `chore: remove planning comment`
+
+---
+
+## Después de los 4 fixes
+
+1. Marcar tareas AUDIT-1 a AUDIT-4 hechas en este archivo.
+2. Sobreescribir este archivo con `Estado: SIN BLOQUEOS`.
+3. Continuar **Fase 2.3** (`OpenCodeClient` wrapper).
+4. **IMPORTANTE Fase 2.4**: AGENT.md menciona `eventsource` no listado en tabla B. Opus recomienda usar `undici` fetch streaming (ya transitivo). Si llegas a 2.4 y no hay decisión clara, pausar y preguntar al usuario.
+
+---
+
+## Drift documentado (no requiere fix, solo registro)
+
+- `package.json` tiene `"type": "module"`. Necesario para `vite.config.mjs`. AGENT.md E.1 no lo listaba — aceptado por Opus.
+- `vite.config.ts` (PLAN.md 0.5) implementado como `vite.config.mjs`. Funcionalmente equivalente con `"type": "module"`. Aceptado.
+- `@types/node ^18.0.0` añadido a devDependencies (no estaba en tabla B). Necesario para `child_process`/`net`/`crypto`. Aceptado.
