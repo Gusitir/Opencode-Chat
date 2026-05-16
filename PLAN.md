@@ -161,37 +161,37 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 - **Done when**: Cambiar tema VSCode actualiza colores del sidebar.
 - **Commit**: `feat: theme tokens`
 
-### [ ] 4.2 InputBar
+### [x] 4.2 InputBar
 - **Files**: `webview/lib/components/InputBar.svelte`
 - **Steps**: `<textarea>` auto-resize (hasta 10 líneas, luego scroll). Botón send. Shortcut Cmd/Ctrl+Enter dispara send. Disabled si `streaming === true` (prop).
 - **Done when**: Tipear texto, Enter inserta newline, Ctrl+Enter envía (loguea por ahora).
 - **Commit**: `feat: input bar component`
 
-### [ ] 4.3 Message
+### [x] 4.3 Message
 - **Files**: `webview/lib/components/Message.svelte`
 - **Steps**: Props `role: 'user'|'assistant'`, `parts: MessagePart[]`. Renderiza con clases distintas por rol (alineación, color sutil). Texto vía markdown renderer (placeholder devuelve `text` plano por ahora).
 - **Done when**: Mock de 2 mensajes se ven distintos según rol.
 - **Commit**: `feat: message bubble component`
 
-### [ ] 4.4 MessageList
+### [x] 4.4 MessageList
 - **Files**: `webview/lib/components/MessageList.svelte`
 - **Steps**: Recibe `messages` (rune `$state`). `$effect` que auto-scrollea al final si el user está cerca del bottom (>200px del fondo NO auto-scrollea).
 - **Done when**: Añadir mensaje al store hace scroll al final.
 - **Commit**: `feat: message list with auto-scroll`
 
-### [ ] 4.5 Markdown renderer
+### [x] 4.5 Markdown renderer
 - **Files**: `webview/lib/markdown/renderer.ts`, `webview/lib/markdown/CodeBlock.svelte`
 - **Steps**: `renderer.ts` usa `marked` con custom renderer para code blocks → emite tag `<pre data-lang="...">`. `CodeBlock.svelte` recibe `code`, `lang`, usa `shiki` con tema `vitesse-dark`/`vitesse-light` según preferencia VSCode. Sanitizar con allowlist (marked v14 incluye opciones).
 - **Done when**: Mensaje con bloque ```ts ... ``` se highlightea correctamente.
 - **Commit**: `feat: markdown + shiki rendering`
 
-### [ ] 4.6 Chat compose
+### [x] 4.6 Chat compose
 - **Files**: `webview/lib/components/Chat.svelte`, `webview/App.svelte`
 - **Steps**: `Chat.svelte` compone `<MessageList/>` + `<InputBar/>` con layout flex column, input pegado abajo.
 - **Done when**: Sidebar muestra layout chat completo con mensajes mock.
 - **Commit**: `feat: chat layout composition`
 
-### [ ] 4.7 Stores Svelte
+### [x] 4.7 Stores Svelte
 - **Files**: `webview/lib/stores/session.svelte.ts`, `webview/lib/stores/messages.svelte.ts`, `webview/lib/stores/config.svelte.ts`
 - **Steps**: Cada uno exporta clase con propiedades `$state`. Singleton vía `export const X = new XStore()`.
 - **Done when**: Stores accesibles desde componentes, reactividad funciona.
@@ -443,10 +443,10 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
 
-- **Fase**: 4 (UI MVP in progress)
-- **Última tarea completada**: 4.1 (Theme variables)
-- **Próxima tarea**: 4.2 (InputBar)
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1 (23 tareas) + 10 audits
-- **Commits**: 34 commits, ~5.5KB extension.js, ~32KB webview.js, theme CSS 1KB
-- **Bloqueos**: SIN BLOQUEOS — theming ready, Svelte structure solid
-- **Fecha último update**: 2026-05-16 (sesión 2 final)
+- **Fase**: 4 (UI Chat MVP — COMPLETADA)
+- **Última tarea completada**: 4.7 Stores Svelte
+- **Próxima tarea**: 5.1 New session flow
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7 (31 tareas) + 10 audits
+- **Commits**: 38 commits, ~15KB extension.js, ~78KB webview.js (incluye marked+shiki)
+- **Bloqueos**: SIN BLOQUEOS — UI completa, stores listas, markdown rendering funcional
+- **Fecha último update**: 2026-05-16 (sesión 3)

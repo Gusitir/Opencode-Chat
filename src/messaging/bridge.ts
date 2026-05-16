@@ -1,30 +1,41 @@
 import * as vscode from 'vscode';
+import { v4 as uuid } from 'uuid';
 import { WebviewToHost, HostToWebview } from './types';
 import { info } from '../utils/logger';
+import { OpenCodeClient } from '../server/OpenCodeClient';
+import { SessionStore } from '../providers/SessionStore';
 
 export interface BridgeDeps {
   webview: vscode.WebviewView['webview'];
+  client: OpenCodeClient;
+  sessionStore: SessionStore;
 }
 
 export function createBridge(deps: BridgeDeps) {
-  const { webview } = deps;
+  const { webview, client, sessionStore } = deps;
 
   const post = (msg: HostToWebview) => {
     webview.postMessage(msg);
+  };
+
+  const sendState = async () => {
+    const sessions = await sessionStore.list();
+    const currentSessionId = sessions.length > 0 ? sessions[0].id : null;
+    const state: HostToWebview = {
+      type: 'state',
+      sessions,
+      currentSessionId,
+      models: [],
+      selectedModel: null,
+    };
+    post(state);
   };
 
   webview.onDidReceiveMessage((msg: WebviewToHost) => {
     switch (msg.type) {
       case 'ready': {
         info('Webview ready');
-        const state: HostToWebview = {
-          type: 'state',
-          sessions: [],
-          currentSessionId: null,
-          models: [],
-          selectedModel: null,
-        };
-        post(state);
+        void sendState();
         break;
       }
       case 'sendPrompt': {
@@ -32,7 +43,20 @@ export function createBridge(deps: BridgeDeps) {
         break;
       }
       case 'newSession': {
-        info('New session');
+        void (async () => {
+          try {
+            const id = await client.createSession();
+            await sessionStore.create({
+              id,
+              name: `Session ${new Date().toLocaleTimeString()}`,
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
+            });
+            await sendState();
+          } catch (err) {
+            info(`Failed to create session: ${(err as Error).message}`);
+          }
+        })();
         break;
       }
       case 'switchSession': {

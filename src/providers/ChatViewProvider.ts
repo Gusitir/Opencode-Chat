@@ -4,9 +4,15 @@ import * as path from 'path';
 import { randomBytes } from 'crypto';
 import { info } from '../utils/logger';
 import { createBridge } from '../messaging/bridge';
+import { OpenCodeClient } from '../server/OpenCodeClient';
+import { SessionStore } from './SessionStore';
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
-  constructor(private context: vscode.ExtensionContext) {}
+  constructor(
+    private context: vscode.ExtensionContext,
+    private client: OpenCodeClient,
+    private sessionStore: SessionStore
+  ) {}
 
   resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
     webviewView.webview.options = {
@@ -30,7 +36,11 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     html = html.replace(/<head[^>]*>/, `<head><meta http-equiv="Content-Security-Policy" content="${csp}">`);
 
     webviewView.webview.html = html;
-    createBridge({ webview: webviewView.webview });
+    createBridge({
+      webview: webviewView.webview,
+      client: this.client,
+      sessionStore: this.sessionStore,
+    });
     info('ChatViewProvider resolved');
   }
 
