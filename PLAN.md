@@ -26,31 +26,31 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 - **Done when**: `pnpm tsc -p tsconfig.extension.json --noEmit` y `pnpm tsc -p tsconfig.webview.json --noEmit` no fallan (con archivos placeholder mínimos).
 - **Commit**: `chore: add tsconfig`
 
-### [ ] 0.4 esbuild.config.mjs
+### [x] 0.4 esbuild.config.mjs
 - **Files**: `esbuild.config.mjs`
 - **Steps**: Exporta función `build({watch})` que llama a `esbuild.context` con: `entryPoints:['src/extension.ts']`, `bundle:true`, `platform:'node'`, `target:'node18'`, `format:'cjs'`, `external:['vscode']`, `outfile:'dist/extension.js'`, `sourcemap:true`.
 - **Done when**: `node esbuild.config.mjs` genera `dist/extension.js` (con `src/extension.ts` placeholder vacío).
 - **Commit**: `chore: add esbuild config`
 
-### [ ] 0.5 vite.config.ts + svelte.config.js
+### [x] 0.5 vite.config.ts + svelte.config.js
 - **Files**: `vite.config.ts`, `svelte.config.js`
 - **Steps**: `svelte.config.js` exporta `{ preprocess: vitePreprocess() }`. `vite.config.ts` usa `@sveltejs/vite-plugin-svelte`, `base: './'`, `build.outDir: 'dist/webview'`, `build.rollupOptions.input: 'webview/index.html'`, `build.emptyOutDir: true`.
 - **Done when**: `pnpm vite build` genera `dist/webview/index.html` + assets (con `webview/index.html` placeholder).
 - **Commit**: `chore: add vite + svelte config`
 
-### [ ] 0.6 .vscode/launch.json + tasks.json + extensions.json
+### [x] 0.6 .vscode/launch.json + tasks.json + extensions.json
 - **Files**: `.vscode/launch.json`, `.vscode/tasks.json`, `.vscode/extensions.json`
 - **Steps**: `launch.json` con config "Run Extension" tipo `extensionHost`, `args:['--extensionDevelopmentPath=${workspaceFolder}']`, `preLaunchTask:'build'`. `tasks.json` task `build` corre `pnpm build`. `extensions.json` recomienda `svelte.svelte-vscode`, `dbaeumer.vscode-eslint`.
 - **Done when**: F5 en VSCode lanza Extension Development Host sin error (con scaffolding mínimo).
 - **Commit**: `chore: add vscode debug config`
 
-### [ ] 0.7 Assets media
+### [x] 0.7 Assets media
 - **Files**: `media/icon.png` (placeholder 256x256, fondo plano #1e1e1e con texto "OC"), `media/activity-bar.svg` (24x24 monocromo simple, `fill="currentColor"`).
 - **Steps**: Generar PNG con cualquier herramienta o crear placeholder válido. SVG simple (un cuadrado o burbuja de chat).
 - **Done when**: Archivos existen y son válidos (`file` los reconoce como PNG/SVG).
 - **Commit**: `chore: add icon assets`
 
-### [ ] 0.8 pnpm install
+### [x] 0.8 pnpm install
 - **Steps**: Ejecutar `pnpm install`.
 - **Done when**: Sin errores, `pnpm-lock.yaml` generado.
 - **Commit**: `chore: install dependencies`
@@ -59,31 +59,31 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## Fase 1 — Extension host esqueleto
 
-### [ ] 1.1 Logger
+### [x] 1.1 Logger
 - **Files**: `src/utils/logger.ts`
 - **Steps**: Export `getLogger()` singleton que devuelve `vscode.window.createOutputChannel('Opencode Chat', { log: true })`. Métodos: `info(msg)`, `warn(msg)`, `error(msg, err?)`.
 - **Done when**: Importable, no crashea.
 - **Commit**: `feat: add logger utility`
 
-### [ ] 1.2 Config reader
+### [x] 1.2 Config reader
 - **Files**: `src/utils/config.ts`
 - **Steps**: Export `getConfig()` lee `vscode.workspace.getConfiguration('opencodeChat')` y devuelve objeto tipado con `cliPath`, `serverPort`, `defaultModel`, `autoApproveTools`. Export `onConfigChange(cb)` que suscribe a `onDidChangeConfiguration`.
 - **Done when**: Compila sin warnings.
 - **Commit**: `feat: add config reader`
 
-### [ ] 1.3 extension.ts entrypoint
+### [x] 1.3 extension.ts entrypoint
 - **Files**: `src/extension.ts`
 - **Steps**: Export `activate(context)` y `deactivate()`. En `activate`: instanciar logger, registrar `ChatViewProvider` con `vscode.window.registerWebviewViewProvider('opencodeChat.view', provider)`, registrar comandos de la sección E.1 de `AGENT.md` (placeholders por ahora).
 - **Done when**: F5 abre Extension Development Host, panel "Opencode Chat" aparece en activity bar.
 - **Commit**: `feat: register extension activation`
 
-### [ ] 1.4 ChatViewProvider esqueleto
+### [x] 1.4 ChatViewProvider esqueleto
 - **Files**: `src/providers/ChatViewProvider.ts`
 - **Steps**: Clase implements `vscode.WebviewViewProvider`. Método `resolveWebviewView` carga HTML desde `dist/webview/index.html`, reescribe paths a `webview.asWebviewUri`, inyecta CSP de E.3 de `AGENT.md`, inyecta nonce en `<script>`.
 - **Done when**: Sidebar muestra el HTML del webview.
 - **Commit**: `feat: chat view provider scaffold`
 
-### [ ] 1.5 Webview "Hello"
+### [x] 1.5 Webview "Hello"
 - **Files**: `webview/index.html`, `webview/main.ts`, `webview/App.svelte`
 - **Steps**: `index.html` con `<div id="app"></div>` + `<script type="module" src="/main.ts">`. `main.ts` monta `App` con `mount(App, { target: document.getElementById('app')! })`. `App.svelte` muestra "Opencode Chat — initializing…".
 - **Done when**: Sidebar muestra el texto.
@@ -93,13 +93,13 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## Fase 2 — Server lifecycle
 
-### [ ] 2.1 OpenCodeServer.start/stop
+### [x] 2.1 OpenCodeServer.start/stop
 - **Files**: `src/server/OpenCodeServer.ts`
 - **Steps**: Clase con `start(): Promise<{port:number, password:string}>` que: obtiene puerto libre (helper interno usando `net.createServer().listen(0)`), genera UUID password, spawnea `child_process.spawn(cfg.cliPath, ['serve','--port',String(port),'--hostname','127.0.0.1'], { env: { ...process.env, OPENCODE_SERVER_PASSWORD: password }, stdio:['ignore','pipe','pipe'] })`. Loguea stdout/stderr al logger. Polling a `GET /global/health` hasta 200 (timeout 10s). Método `stop()` envía `SIGTERM`.
 - **Done when**: Llamado desde `activate()`, OutputChannel muestra logs del server y healthcheck pasa.
 - **Commit**: `feat: spawn opencode server lifecycle`
 
-### [ ] 2.2 Detección de CLI faltante
+### [x] 2.2 Detección de CLI faltante
 - **Files**: `src/server/OpenCodeServer.ts` (extender), `src/commands/installOpenCode.ts`
 - **Steps**: Si `spawn` falla con `ENOENT`, mostrar `vscode.window.showErrorMessage('OpenCode CLI not found', 'Install Guide')` que abre https://opencode.ai/docs/. Registrar comando `opencodeChat.installCli` que también abre esa URL.
 - **Done when**: Renombrar `cliPath` a inválido reproduce el mensaje.
@@ -443,8 +443,9 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
 
-- **Fase**: 0 (Bootstrap — en progreso)
-- **Última tarea completada**: 0.3
-- **Próxima tarea**: 0.4
+- **Fase**: 2 (Phase 1 complete, Phase 2 in progress)
+- **Última tarea completada**: 2.2 (Detección de CLI faltante)
+- **Próxima tarea**: 2.3 (OpenCodeClient wrapper)
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.2 (15 tareas)
 - **Bloqueos**: ninguno
 - **Fecha último update**: 2026-05-16
