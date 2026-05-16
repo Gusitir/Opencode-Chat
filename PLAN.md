@@ -127,25 +127,25 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## Fase 3 — Bridge Webview ↔ Host
 
-### [ ] 3.1 Tipos compartidos
+### [x] 3.1 Tipos compartidos
 - **Files**: `src/messaging/types.ts`
 - **Steps**: Copiar literalmente E.2 de `AGENT.md`.
 - **Done when**: Compila.
 - **Commit**: `feat: webview/host message types`
 
-### [ ] 3.2 Bridge handler en host
+### [x] 3.2 Bridge handler en host
 - **Files**: `src/messaging/bridge.ts`
 - **Steps**: Función `createBridge(webview, deps)` retorna `{post(msg: HostToWebview)}`. Suscribe `webview.onDidReceiveMessage` y hace `switch(msg.type)` exhaustivo invocando handlers (placeholders por ahora, salvo `ready` que responde con `state`).
 - **Done when**: Al cargar el webview, host loguea "ready received".
 - **Commit**: `feat: webview message bridge`
 
-### [ ] 3.3 API webview
+### [x] 3.3 API webview
 - **Files**: `webview/lib/api/vscode.ts`
 - **Steps**: Export `vscode` = `acquireVsCodeApi()` cacheado. Export `send(msg: WebviewToHost)` y `on<T extends HostToWebview['type']>(type, cb)` con tipos discriminados. Mantener registry de listeners.
 - **Done when**: Importable desde `App.svelte`, sin errores TS.
 - **Commit**: `feat: typed webview <-> host api`
 
-### [ ] 3.4 Ready handshake
+### [x] 3.4 Ready handshake
 - **Files**: `webview/App.svelte`, `src/messaging/bridge.ts`
 - **Steps**: En `App.svelte` `onMount` enviar `{type:'ready'}`. Host responde con `state` (mock vacío). App renderiza "Connected".
 - **Done when**: Sidebar muestra "Connected" tras cargar.
@@ -443,9 +443,10 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
 
-- **Fase**: 3 (Phase 2 complete, ready for bridge)
-- **Última tarea completada**: 2.5 (Lifecycle wiring)
-- **Próxima tarea**: 3.1 (Tipos compartidos)
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5 (18 tareas) + 4 audits
-- **Bloqueos**: SIN BLOQUEOS
-- **Fecha último update**: 2026-05-16
+- **Fase**: 3 (Bridge complete, ready for chat MVP)
+- **Última tarea completada**: 3.4 (Ready handshake)
+- **Próxima tarea**: 4.1 (Theme variables)
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4 (22 tareas) + 4 audits
+- **Commits**: 26 commits, ~5.5KB extension.js, ~32KB webview.js
+- **Bloqueos**: SIN BLOQUEOS — ready para UI MVP
+- **Fecha último update**: 2026-05-16 (sesión 2)
