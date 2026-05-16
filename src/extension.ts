@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
-import { info } from './utils/logger';
+import { info, error } from './utils/logger';
 import { ChatViewProvider } from './providers/ChatViewProvider';
+import { registerInstallCommand } from './commands/installOpenCode';
 
 export async function activate(context: vscode.ExtensionContext) {
   info('Activating Opencode Chat extension');
@@ -9,6 +10,8 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider('opencodeChat.view', provider)
   );
+
+  registerInstallCommand(context);
 
   context.subscriptions.push(
     vscode.commands.registerCommand('opencodeChat.openChat', async () => {
@@ -19,13 +22,15 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
     vscode.commands.registerCommand('opencodeChat.addSelectionToPrompt', async () => {
       info('Command: addSelectionToPrompt');
-    }),
-    vscode.commands.registerCommand('opencodeChat.installCli', async () => {
-      vscode.env.openExternal(vscode.Uri.parse('https://opencode.ai/docs/'));
     })
   );
 
-  info('Opencode Chat extension activated');
+  try {
+    // Server will be started in task 2.5
+    info('Opencode Chat extension activated');
+  } catch (err) {
+    error('Failed to activate Opencode Chat', err as Error);
+  }
 }
 
 export function deactivate() {
