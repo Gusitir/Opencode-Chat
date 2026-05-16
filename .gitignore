@@ -13,7 +13,6 @@ out
 coverage
 
 # ide
-.vscode
 *.swp
 *.swo
 *~
