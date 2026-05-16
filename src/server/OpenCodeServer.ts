@@ -1,3 +1,4 @@
+import * as vscode from 'vscode';
 import * as child_process from 'child_process';
 import * as net from 'net';
 import { randomUUID } from 'crypto';
@@ -27,7 +28,17 @@ export class OpenCodeServer {
       error(`[opencode stderr] ${data.toString().trim()}`);
     });
 
-    this.process.on('error', (err) => {
+    this.process.on('error', (err: NodeJS.ErrnoException) => {
+      if (err.code === 'ENOENT') {
+        void vscode.window.showErrorMessage(
+          'OpenCode CLI not found',
+          'Install Guide'
+        ).then((choice) => {
+          if (choice === 'Install Guide') {
+            void vscode.env.openExternal(vscode.Uri.parse('https://opencode.ai/docs/'));
+          }
+        });
+      }
       error('OpenCode process error', err);
     });
 
