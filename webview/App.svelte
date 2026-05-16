@@ -1,5 +1,16 @@
 <script>
+  import { onMount } from 'svelte';
+  import { send, on } from './lib/api/vscode';
+
   let message = 'Opencode Chat — initializing…';
+
+  onMount(() => {
+    const unsubscribe = on('state', () => {
+      message = 'Connected';
+    });
+    send({ type: 'ready' });
+    return () => unsubscribe();
+  });
 </script>
 
 <div class="container">
