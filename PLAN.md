@@ -219,19 +219,19 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 - **Done when**: Prompt "hola" produce respuesta streameada token a token.
 - **Commit**: `feat: forward sse to webview`
 
-### [ ] 5.4 Renderizado incremental
+### [x] 5.4 Renderizado incremental
 - **Files**: `webview/lib/stores/messages.svelte.ts`, `webview/lib/components/MessageList.svelte`
 - **Steps**: Handler `messageDelta` hace upsert de parts en el mensaje. Reactividad redibuja sin parpadeo.
 - **Done when**: Visualmente fluido, sin saltos.
 - **Commit**: `feat: incremental render`
 
-### [ ] 5.5 Thinking indicator
+### [x] 5.5 Thinking indicator
 - **Files**: `webview/lib/components/MessageList.svelte`
 - **Steps**: Si último mensaje es user sin respuesta assistant aún, mostrar burbuja "thinking…" con 3 puntos animados.
 - **Done when**: Aparece y desaparece correctamente.
 - **Commit**: `feat: thinking indicator`
 
-### [ ] 5.6 Abort + errores
+### [x] 5.6 Abort + errores
 - **Files**: `webview/lib/components/InputBar.svelte`, `src/messaging/bridge.ts`
 - **Steps**: Durante streaming, botón send se convierte en "stop" que envía `abort`. Host cancela request. Errores del SDK se postean como `error` y se renderizan como banner rojo arriba del input.
 - **Done when**: Click stop interrumpe, errores se muestran.
@@ -443,10 +443,10 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
 
-- **Fase**: 5 (Conectar chat al server — IN PROGRESS, 3/6 tareas)
-- **Última tarea completada**: 5.3 Stream events → webview
-- **Próxima tarea**: 5.4 Renderizado incremental
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.3 (34 tareas) + 10 audits
-- **Commits**: 41 commits, ~18KB extension.js, ~79KB webview.js (SSE + stores)
-- **Bloqueos**: SIN BLOQUEOS — newSession, sendPrompt, SSE streaming funcionales
-- **Fecha último update**: 2026-05-16 (sesión 3 continuada)
+- **Fase**: 5 (Conectar chat al server — COMPLETADA)
+- **Última tarea completada**: 5.6 Abort + errores
+- **Próxima tarea**: 6.1 ModelSelector
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.6 (40 tareas) + 10 audits
+- **Commits**: 46 commits, ~18KB extension.js, ~81KB webview.js (full UI + streaming)
+- **Bloqueos**: SIN BLOQUEOS — chat MVP funcional end-to-end (crear sesión → enviar prompt → streaming → errores)
+- **Fecha último update**: 2026-05-16 (sesión 3 — 44 tasks done!)
