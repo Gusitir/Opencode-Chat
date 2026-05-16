@@ -26,7 +26,8 @@ export type HostToWebview =
 const api = acquireVsCodeApi();
 const listeners: Map<string, Set<Function>> = new Map();
 
-api.onMessage((msg: HostToWebview) => {
+window.addEventListener('message', (event: MessageEvent<HostToWebview>) => {
+  const msg = event.data;
   const handlers = listeners.get(msg.type);
   if (handlers) {
     handlers.forEach((handler) => handler(msg));
