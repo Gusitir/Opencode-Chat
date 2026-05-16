@@ -1,48 +1,43 @@
 # HAIKU_BLOCKERS.md
 
-Estado: **BLOQUEADO EN TAREA 0.3**
+Estado: **RESUELTO** — proceder con 0.3 → 0.8 normal.
 
-## Bloqueador
+---
 
-`package.json` en AGENT.md sección E.1 está incompleto. Falta la sección `devDependencies` con las herramientas de build y tipos necesarios.
+## Resolución (sesión Opus 2026-05-16)
 
-**Síntoma**: Comando `pnpm tsc -p tsconfig.extension.json --noEmit` falla porque TypeScript no está instalado.
+### Cambios aplicados
 
-**Tarea afectada**: 0.3 (tsconfigs) requiere tipo-checking como parte del `Done when:`.
+1. **`AGENT.md` sección E.1**: añadido bloque `devDependencies` completo con versiones pinneadas según sección B. Todas las libs van en `devDependencies` (no `dependencies`) porque `vsce package --no-dependencies` skipea `node_modules` y todo se bundlea (esbuild para el host, Vite para el webview).
 
-## Lo que necesito
+2. **`package.json` (worktree)**: añadido el mismo bloque `devDependencies` + campo `pnpm.onlyBuiltDependencies`.
 
-Completa `package.json` con sección `devDependencies` que incluya TODOS estos paquetes con versiones pinneadas exactas (según AGENT.md sección B):
+3. **`.npmrc`**: añadida línea `verify-deps-before-run=false` para evitar que pnpm 11 reejecute install antes de cada comando.
 
-```json
-"devDependencies": {
-  "@types/vscode": "^1.85.0",
-  "@sveltejs/vite-plugin-svelte": "^4.0.0",
-  "esbuild": "^0.24.0",
-  "marked": "^14.1.0",
-  "shiki": "^1.22.0",
-  "svelte": "^5.0.0",
-  "typescript": "^5.6.0",
-  "vite": "^5.4.0",
-  "vitest": "^2.1.0",
-  "@vscode/test-electron": "^2.4.0",
-  "@vscode/vsce": "latest",
-  "ovsx": "latest",
-  "concurrently": "^8.0.0"
-}
-```
+4. **`pnpm-workspace.yaml`** (archivo NUEVO, no estaba en AGENT.md D): pnpm 11 lo creó automáticamente para gestionar permisos de build scripts. Contenido:
+   ```yaml
+   allowBuilds:
+     '@vscode/vsce-sign': true
+     esbuild: true
+     keytar: true
+   ```
+   Sin esto, `pnpm install` deja warnings que pnpm 11 trata como error en `runDepsStatusCheck`. **NO borrar**.
 
-(Ajusta versiones según tu criterio si las listadas arriba difieren de AGENT.md B o tienes preferences.)
+5. **`@types/node ^18.0.0`**: añadido a devDependencies aunque no estaba en AGENT.md sección B. Necesario porque target host es `node18` y se usarán `child_process`, `net`, `crypto`, etc. en Fase 2.
 
-## Cómo arreglarlo
+### Verificación
 
-1. Actualizar AGENT.md sección E.1 con el bloque `devDependencies` completo.
-2. Comunicar a Haiku (próxima sesión) que continúe desde tarea 0.2 con `pnpm install` full.
-3. Luego Haiku ejecutará 0.3 sin problemas.
+- `pnpm install` → OK (562 packages, build scripts ejecutados).
+- `pnpm tsc -p tsconfig.extension.json --noEmit` → exit 0.
+- `pnpm tsc -p tsconfig.webview.json --noEmit` → exit 0.
 
-## Contexto
+### Next para Haiku
 
-- Tareas completadas: 0.1, 0.2
-- Commits hechos: 2 (ignore files, package manifest)
-- Git repo: inicializado, listo
-- Next: tsconfigs (0.3 → 0.8), entonces Fase 1
+- Tarea **0.3** ya cumple su `Done when`. Si los tsconfigs y placeholders existentes son correctos, marcar `[x]` 0.3 con commit `chore: add tsconfig`.
+- Continuar con **0.4** (`esbuild.config.mjs`) → **0.8**.
+- En 0.8 (`pnpm install`): ya está instalado, sólo verificar que no haya cambios y commit como `chore: install dependencies` puede saltarse — o hacer commit vacío con `--allow-empty` si querés mantener la trazabilidad del PLAN.
+
+### Notas de Opus para futuras fases (no bloqueante, informativo)
+
+- **Fase 2.4 (SSE)**: AGENT.md menciona `eventsource` package no listado en tabla B. **Recomendación Opus**: usar `undici` (ya transitivo) con `fetch` streaming en vez de añadir `eventsource`. Si Haiku llega a 2.4 sin instrucciones, pausar y preguntar.
+- **`@opencode-ai/sdk`**: versión instalada `1.15.0` (semver mayor a `^1.1.18`). Compatible. Si la API cambió, ajustar en Fase 2.3.
