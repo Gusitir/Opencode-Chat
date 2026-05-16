@@ -21,9 +21,15 @@
       if (existing) {
         const idx = existing.parts.findIndex((p) => p.kind === msg.part.kind);
         if (idx !== -1) {
-          existing.parts[idx] = msg.part;
+          const part = existing.parts[idx];
+          if (part.kind === 'text' && msg.part.kind === 'text') {
+            part.text += msg.part.text;
+          } else {
+            existing.parts[idx] = msg.part;
+          }
+          existing.parts = [...existing.parts];
         } else {
-          existing.parts.push(msg.part);
+          existing.parts = [...existing.parts, msg.part];
         }
       } else {
         messagesStore.addMessage({

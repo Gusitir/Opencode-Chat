@@ -201,19 +201,19 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## Fase 5 — Conectar chat al server
 
-### [ ] 5.1 New session flow
+### [x] 5.1 New session flow
 - **Files**: `src/messaging/bridge.ts`, `webview/lib/components/Chat.svelte`
 - **Steps**: Webview envía `newSession` → host llama `client.createSession()` → host responde `state` con la sesión nueva como current.
 - **Done when**: Click en "+" crea sesión, sidebar muestra id.
 - **Commit**: `feat: create session flow`
 
-### [ ] 5.2 Send prompt
+### [x] 5.2 Send prompt
 - **Files**: `src/messaging/bridge.ts`
 - **Steps**: Handler `sendPrompt` llama `client.sendPrompt(sessionId, text, model)`. La respuesta NO se espera completa — se confía en SSE.
 - **Done when**: Enviar prompt no bloquea, OutputChannel muestra evento del server.
 - **Commit**: `feat: send prompt to server`
 
-### [ ] 5.3 Stream events → webview
+### [x] 5.3 Stream events → webview
 - **Files**: `src/messaging/bridge.ts`, `src/server/EventStream.ts`
 - **Steps**: Suscribir a eventos del stream, filtrar por tipos relevantes (message part updated/done), transformar a `messageDelta`/`messageDone` y postear al webview.
 - **Done when**: Prompt "hola" produce respuesta streameada token a token.
@@ -443,10 +443,10 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
 
-- **Fase**: 4 (UI Chat MVP — COMPLETADA)
-- **Última tarea completada**: 4.7 Stores Svelte
-- **Próxima tarea**: 5.1 New session flow
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7 (31 tareas) + 10 audits
-- **Commits**: 38 commits, ~15KB extension.js, ~78KB webview.js (incluye marked+shiki)
-- **Bloqueos**: SIN BLOQUEOS — UI completa, stores listas, markdown rendering funcional
-- **Fecha último update**: 2026-05-16 (sesión 3)
+- **Fase**: 5 (Conectar chat al server — IN PROGRESS, 3/6 tareas)
+- **Última tarea completada**: 5.3 Stream events → webview
+- **Próxima tarea**: 5.4 Renderizado incremental
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.3 (34 tareas) + 10 audits
+- **Commits**: 41 commits, ~18KB extension.js, ~79KB webview.js (SSE + stores)
+- **Bloqueos**: SIN BLOQUEOS — newSession, sendPrompt, SSE streaming funcionales
+- **Fecha último update**: 2026-05-16 (sesión 3 continuada)
