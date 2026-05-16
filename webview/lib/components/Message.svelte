@@ -8,7 +8,7 @@
   }
 
   let { role, parts } = $props();
-
+</script>
 
 <div class="message {role}">
   {#each parts as part (part.kind)}

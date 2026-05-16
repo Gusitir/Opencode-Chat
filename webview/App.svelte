@@ -1,31 +1,38 @@
 <script>
   import { onMount } from 'svelte';
   import { send, on } from './lib/api/vscode';
+  import Chat from './lib/components/Chat.svelte';
   import './lib/styles/global.css';
 
-  let message = 'Opencode Chat — initializing…';
+  let connected = $state(false);
 
   onMount(() => {
     const unsubscribe = on('state', () => {
-      message = 'Connected';
+      connected = true;
     });
     send({ type: 'ready' });
     return () => unsubscribe();
   });
 </script>
 
-<div class="container">
-  <h1>{message}</h1>
-</div>
+{#if connected}
+  <Chat />
+{:else}
+  <div class="loading">
+    <p>Opencode Chat — initializing…</p>
+  </div>
+{/if}
 
 <style>
-  .container {
-    padding: 16px;
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--fg);
   }
 
-  h1 {
+  p {
     margin: 0;
-    font-size: 16px;
-    font-weight: 400;
   }
 </style>

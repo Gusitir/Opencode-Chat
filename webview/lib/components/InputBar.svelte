@@ -36,7 +36,7 @@
     onKeydown={handleKeydown}
     placeholder="Type a message..."
     disabled={false}
-  />
+  ></textarea>
   <button onClick={sendMessage} disabled={!text.trim()}>Send</button>
 </div>
 
