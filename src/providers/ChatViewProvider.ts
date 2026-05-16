@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import { randomBytes } from 'crypto';
 import { info } from '../utils/logger';
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
@@ -32,11 +33,6 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
   }
 
   private getNonce(): string {
-    let nonce = '';
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 32; i++) {
-      nonce += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return nonce;
+    return randomBytes(16).toString('base64');
   }
 }
