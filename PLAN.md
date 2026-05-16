@@ -105,19 +105,19 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 - **Done when**: Renombrar `cliPath` a inválido reproduce el mensaje.
 - **Commit**: `feat: detect missing opencode cli`
 
-### [ ] 2.3 OpenCodeClient wrapper
+### [x] 2.3 OpenCodeClient wrapper
 - **Files**: `src/server/OpenCodeClient.ts`
 - **Steps**: Constructor recibe `{baseUrl, password}`. Instancia `@opencode-ai/sdk` client. Métodos: `createSession()`, `sendPrompt(sessionId, text, model)`, `listProviders()`, `findFiles(query)`. Cada método wrapea errores en `OpenCodeError`.
 - **Done when**: Test manual: crear sesión devuelve id.
 - **Commit**: `feat: opencode sdk client wrapper`
 
-### [ ] 2.4 EventStream SSE
+### [x] 2.4 EventStream SSE
 - **Files**: `src/server/EventStream.ts`
 - **Steps**: Clase que abre `EventSource` (usar `eventsource` package o `undici` fetch streaming) contra `/global/event` con header `Authorization: Basic ...`. Emite eventos vía `EventEmitter`. Reconexión exponencial (1s, 2s, 4s, max 30s) al desconectar.
 - **Done when**: Al crear sesión por la API, el listener recibe al menos un evento.
 - **Commit**: `feat: sse event stream client`
 
-### [ ] 2.5 Lifecycle en activate/deactivate
+### [x] 2.5 Lifecycle en activate/deactivate
 - **Files**: `src/extension.ts` (extender)
 - **Steps**: En `activate`: `await server.start()`, instanciar `OpenCodeClient` y `EventStream`, pasarlos al `ChatViewProvider`. En `deactivate`: cerrar stream y matar server.
 - **Done when**: Cerrar VSCode mata el proceso `opencode serve` (verificar con `tasklist` en Windows o `ps` en Linux/Mac).
@@ -443,9 +443,9 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
 
-- **Fase**: 2 (Audits completados, listo para 2.3+)
-- **Última tarea completada**: AUDIT-4 (cleanup comment)
-- **Próxima tarea**: 2.3 (OpenCodeClient wrapper)
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.2 (15 tareas) + 4 audits
-- **Bloqueos**: SIN BLOQUEOS — build pasa, dist structure correcta
+- **Fase**: 3 (Phase 2 complete, ready for bridge)
+- **Última tarea completada**: 2.5 (Lifecycle wiring)
+- **Próxima tarea**: 3.1 (Tipos compartidos)
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5 (18 tareas) + 4 audits
+- **Bloqueos**: SIN BLOQUEOS
 - **Fecha último update**: 2026-05-16
