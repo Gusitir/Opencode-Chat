@@ -42,7 +42,14 @@ export function createBridge(deps: BridgeDeps) {
       }
       case 'sendPrompt': {
         void client.sendPrompt(msg.sessionId, msg.text, undefined).catch((err) => {
-          info(`Failed to send prompt: ${(err as Error).message}`);
+          const error = (err as Error).message;
+          info(`Failed to send prompt: ${error}`);
+          const errorMsg: HostToWebview = {
+            type: 'error',
+            sessionId: msg.sessionId,
+            message: error,
+          };
+          post(errorMsg);
         });
         break;
       }
@@ -81,6 +88,7 @@ export function createBridge(deps: BridgeDeps) {
       }
       case 'abort': {
         info(`Abort session: ${msg.sessionId}`);
+        // TODO: implement abort via OpenCode API or signal
         break;
       }
       case 'permissionResponse': {

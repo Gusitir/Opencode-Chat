@@ -6,6 +6,12 @@
   import { messagesStore } from '../stores/messages.svelte';
   import type { MessagePart } from '../../../src/messaging/types';
 
+  interface Props {
+    error?: string | null;
+  }
+
+  let { error = null } = $props();
+
   function handleNewSession() {
     send({ type: 'newSession' });
   }
@@ -19,6 +25,11 @@
   <div class="chat-header">
     <button onClick={handleNewSession} title="Create new session">+</button>
   </div>
+  {#if error}
+    <div class="error-banner">
+      {error}
+    </div>
+  {/if}
   <MessageList {messages} />
   <InputBar />
 </div>
@@ -50,5 +61,14 @@
 
   button:hover {
     background-color: var(--button-hover-bg);
+  }
+
+  .error-banner {
+    padding: 8px 12px;
+    background-color: var(--status-error, #aa0000);
+    color: white;
+    font-size: 0.9em;
+    border-radius: 4px;
+    margin: 4px 8px;
   }
 </style>

@@ -8,12 +8,14 @@
   import './lib/styles/global.css';
 
   let connected = $state(false);
+  let error = $state<string | null>(null);
 
   onMount(() => {
     const unsubscribeState = on('state', (msg) => {
       sessionStore.sessions = msg.sessions;
       sessionStore.currentSessionId = msg.currentSessionId;
       connected = true;
+      error = null;
     });
 
     const unsubscribeDelta = on('messageDelta', (msg: Extract<HostToWebview, { type: 'messageDelta' }>) => {
@@ -41,16 +43,21 @@
       }
     });
 
+    const unsubscribeError = on('error', (msg: Extract<HostToWebview, { type: 'error' }>) => {
+      error = msg.message;
+    });
+
     send({ type: 'ready' });
     return () => {
       unsubscribeState();
       unsubscribeDelta();
+      unsubscribeError();
     };
   });
 </script>
 
 {#if connected}
-  <Chat />
+  <Chat {error} />
 {:else}
   <div class="loading">
     <p>Opencode Chat — initializing…</p>
