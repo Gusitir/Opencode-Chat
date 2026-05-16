@@ -39,7 +39,9 @@ export function createBridge(deps: BridgeDeps) {
         break;
       }
       case 'sendPrompt': {
-        info(`Prompt: ${msg.text}`);
+        void client.sendPrompt(msg.sessionId, msg.text, undefined).catch((err) => {
+          info(`Failed to send prompt: ${(err as Error).message}`);
+        });
         break;
       }
       case 'newSession': {

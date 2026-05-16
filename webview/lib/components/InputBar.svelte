@@ -1,5 +1,6 @@
 <script lang="ts">
   import { send } from '../api/vscode';
+  import { sessionStore } from '../stores/session.svelte';
   import type { WebviewToHost } from '../../../src/messaging/types';
 
   let text = $state('');
@@ -20,8 +21,12 @@
   }
 
   function sendMessage() {
-    if (!text.trim()) return;
-    const msg: WebviewToHost = { type: 'sendPrompt', sessionId: '', text };
+    if (!text.trim() || !sessionStore.currentSessionId) return;
+    const msg: WebviewToHost = {
+      type: 'sendPrompt',
+      sessionId: sessionStore.currentSessionId,
+      text,
+    };
     send(msg);
     text = '';
     textarea.style.height = 'auto';
