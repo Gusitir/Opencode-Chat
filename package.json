@@ -58,7 +58,6 @@
     "publish:ovsx": "ovsx publish --no-dependencies"
   },
   "devDependencies": {
-    "@opencode-ai/sdk": "^1.1.18",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
     "@types/node": "^18.0.0",
     "@types/vscode": "^1.85.0",
