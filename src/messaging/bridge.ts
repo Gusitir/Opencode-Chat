@@ -1,18 +1,20 @@
 import * as vscode from 'vscode';
 import { v4 as uuid } from 'uuid';
-import { WebviewToHost, HostToWebview } from './types';
+import { WebviewToHost, HostToWebview, MessagePart } from './types';
 import { info } from '../utils/logger';
 import { OpenCodeClient } from '../server/OpenCodeClient';
 import { SessionStore } from '../providers/SessionStore';
+import { EventStream } from '../server/EventStream';
 
 export interface BridgeDeps {
   webview: vscode.WebviewView['webview'];
   client: OpenCodeClient;
   sessionStore: SessionStore;
+  stream: EventStream;
 }
 
 export function createBridge(deps: BridgeDeps) {
-  const { webview, client, sessionStore } = deps;
+  const { webview, client, sessionStore, stream } = deps;
 
   const post = (msg: HostToWebview) => {
     webview.postMessage(msg);
@@ -101,6 +103,44 @@ export function createBridge(deps: BridgeDeps) {
         const _exhaustive: never = msg;
         info(`Unknown message: ${_exhaustive}`);
       }
+    }
+  });
+
+  stream.on('message', (event: unknown) => {
+    try {
+      const evt = event as Record<string, unknown>;
+      const sessionId = evt.sessionId as string | undefined;
+      const part = evt.part as unknown;
+      if (!sessionId || !part) return;
+
+      if (typeof part === 'object' && part !== null) {
+        const p = part as Record<string, unknown>;
+        if (p.kind === 'text' && typeof p.text === 'string') {
+          const msg: HostToWebview = {
+            type: 'messageDelta',
+            sessionId,
+            messageId: (evt.messageId as string) || 'current',
+            part: { kind: 'text', text: p.text },
+          };
+          post(msg);
+        } else if (p.kind === 'tool_call') {
+          const msg: HostToWebview = {
+            type: 'messageDelta',
+            sessionId,
+            messageId: (evt.messageId as string) || 'current',
+            part: {
+              kind: 'tool_call',
+              toolId: (p.toolId as string) || '',
+              name: (p.name as string) || '',
+              input: p.input || {},
+              status: (p.status as string) || 'running',
+            },
+          };
+          post(msg);
+        }
+      }
+    } catch (err) {
+      info(`Error processing stream event: ${(err as Error).message}`);
     }
   });
 

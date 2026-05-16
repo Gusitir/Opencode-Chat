@@ -23,7 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
     stream = new EventStream(baseUrl, password);
     stream.start();
 
-    const provider = new ChatViewProvider(context, client, sessionStore);
+    const provider = new ChatViewProvider(context, client, sessionStore, stream);
     context.subscriptions.push(
       vscode.window.registerWebviewViewProvider('opencodeChat.view', provider)
     );

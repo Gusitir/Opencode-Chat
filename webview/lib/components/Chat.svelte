@@ -2,19 +2,17 @@
   import MessageList from './MessageList.svelte';
   import InputBar from './InputBar.svelte';
   import { send } from '../api/vscode';
+  import { sessionStore } from '../stores/session.svelte';
+  import { messagesStore } from '../stores/messages.svelte';
   import type { MessagePart } from '../../../src/messaging/types';
-
-  interface Message {
-    id: string;
-    role: 'user' | 'assistant';
-    parts: MessagePart[];
-  }
-
-  let messages = $state<Message[]>([]);
 
   function handleNewSession() {
     send({ type: 'newSession' });
   }
+
+  let messages = $derived(
+    sessionStore.currentSessionId ? messagesStore.getBySession(sessionStore.currentSessionId) : []
+  );
 </script>
 
 <div class="chat">

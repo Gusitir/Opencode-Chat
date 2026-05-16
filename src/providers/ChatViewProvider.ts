@@ -6,12 +6,14 @@ import { info } from '../utils/logger';
 import { createBridge } from '../messaging/bridge';
 import { OpenCodeClient } from '../server/OpenCodeClient';
 import { SessionStore } from './SessionStore';
+import { EventStream } from '../server/EventStream';
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
   constructor(
     private context: vscode.ExtensionContext,
     private client: OpenCodeClient,
-    private sessionStore: SessionStore
+    private sessionStore: SessionStore,
+    private stream: EventStream
   ) {}
 
   resolveWebviewView(webviewView: vscode.WebviewView): void | Thenable<void> {
@@ -40,6 +42,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
       webview: webviewView.webview,
       client: this.client,
       sessionStore: this.sessionStore,
+      stream: this.stream,
     });
     info('ChatViewProvider resolved');
   }
