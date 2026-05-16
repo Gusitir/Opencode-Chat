@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { randomBytes } from 'crypto';
 import { info } from '../utils/logger';
+import { createBridge } from '../messaging/bridge';
 
 export class ChatViewProvider implements vscode.WebviewViewProvider {
   constructor(private context: vscode.ExtensionContext) {}
@@ -29,6 +30,7 @@ export class ChatViewProvider implements vscode.WebviewViewProvider {
     html = html.replace(/<head[^>]*>/, `<head><meta http-equiv="Content-Security-Policy" content="${csp}">`);
 
     webviewView.webview.html = html;
+    createBridge({ webview: webviewView.webview });
     info('ChatViewProvider resolved');
   }
 
