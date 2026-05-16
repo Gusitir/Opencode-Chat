@@ -1,0 +1,25 @@
+# dependencies
+node_modules
+package-lock.yaml
+pnpm-lock.yaml
+
+# build output
+dist
+out
+
+# extensions
+*.vsix
+
+# testing
+.vscode-test
+coverage
+
+# ide
+.vscode
+*.swp
+*.swo
+*~
+
+# os
+.DS_Store
+Thumbs.db
