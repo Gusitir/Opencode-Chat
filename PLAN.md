@@ -155,7 +155,7 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## Fase 4 — UI Chat MVP
 
-### [ ] 4.1 Theme variables
+### [x] 4.1 Theme variables
 - **Files**: `webview/lib/styles/theme.css`, `webview/lib/styles/global.css`
 - **Steps**: `theme.css` mapea `--vscode-editor-background` → `--bg`, foreground → `--fg`, button bg/fg, input bg/fg, focusBorder, etc. `global.css` aplica reset minimal + box-sizing + font del editor.
 - **Done when**: Cambiar tema VSCode actualiza colores del sidebar.
@@ -443,10 +443,10 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
 
-- **Fase**: 4 (Audits fixed, UI MVP ready)
-- **Última tarea completada**: AUDIT-10 (drop SDK dependency)
-- **Próxima tarea**: 4.1 (Theme variables)
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4 (22 tareas) + 10 audits totales
-- **Commits**: 32 commits, ~5.5KB extension.js, ~32KB webview.js
-- **Bloqueos**: SIN BLOQUEOS — F5 ready, bridge wired, types unified, no `any`
-- **Fecha último update**: 2026-05-16 (sesión 2 audits complete)
+- **Fase**: 4 (UI MVP in progress)
+- **Última tarea completada**: 4.1 (Theme variables)
+- **Próxima tarea**: 4.2 (InputBar)
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1 (23 tareas) + 10 audits
+- **Commits**: 34 commits, ~5.5KB extension.js, ~32KB webview.js, theme CSS 1KB
+- **Bloqueos**: SIN BLOQUEOS — theming ready, Svelte structure solid
+- **Fecha último update**: 2026-05-16 (sesión 2 final)
