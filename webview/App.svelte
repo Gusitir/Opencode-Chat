@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { send, on } from './lib/api/vscode';
+  import './lib/styles/global.css';
 
   let message = 'Opencode Chat — initializing…';
 
@@ -20,9 +21,6 @@
 <style>
   .container {
     padding: 16px;
-    font-family: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto');
-    color: var(--vscode-foreground);
-    background-color: var(--vscode-editor-background);
   }
 
   h1 {
