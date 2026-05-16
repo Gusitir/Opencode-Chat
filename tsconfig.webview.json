@@ -4,6 +4,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "lib": ["dom", "es2022"],
     "rootDir": "./webview"
   },
   "include": ["webview/**/*"],
