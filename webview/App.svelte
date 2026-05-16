@@ -1,13 +1,16 @@
 <script>
   import { onMount } from 'svelte';
   import { send, on } from './lib/api/vscode';
+  import { sessionStore } from './lib/stores/session.svelte';
   import Chat from './lib/components/Chat.svelte';
   import './lib/styles/global.css';
 
   let connected = $state(false);
 
   onMount(() => {
-    const unsubscribe = on('state', () => {
+    const unsubscribe = on('state', (msg) => {
+      sessionStore.sessions = msg.sessions;
+      sessionStore.currentSessionId = msg.currentSessionId;
       connected = true;
     });
     send({ type: 'ready' });
