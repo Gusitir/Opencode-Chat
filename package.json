@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "opencode-chat",
   "displayName": "Opencode Chat",
   "description": "Native chat UI for OpenCode AI coding agent",
