@@ -7,6 +7,18 @@ export class OpenCodeError extends Error {
   }
 }
 
+function isSessionResponse(x: unknown): x is { id: string } {
+  return typeof x === 'object' && x !== null && typeof (x as { id?: unknown }).id === 'string';
+}
+
+function isProvidersResponse(x: unknown): x is { providers: Array<{ provider: string; model: string }> } {
+  return typeof x === 'object' && x !== null && Array.isArray((x as { providers?: unknown }).providers);
+}
+
+function isFilesResponse(x: unknown): x is { results: Array<{ path: string; name: string }> } {
+  return typeof x === 'object' && x !== null && Array.isArray((x as { results?: unknown }).results);
+}
+
 export class OpenCodeClient {
   constructor(private baseUrl: string, private password: string) {
     info(`OpenCodeClient initialized: ${baseUrl}`);
@@ -15,12 +27,11 @@ export class OpenCodeClient {
   async createSession(): Promise<string> {
     try {
       const response = await this.post('/session', {});
-      const sessionId = (response as any).id ?? (response as any).sessionId;
-      if (!sessionId) {
+      if (!isSessionResponse(response)) {
         throw new OpenCodeError('No session ID in response');
       }
-      info(`Created session: ${sessionId}`);
-      return sessionId;
+      info(`Created session: ${response.id}`);
+      return response.id;
     } catch (err) {
       throw this.wrapError(err, 'createSession');
     }
@@ -44,7 +55,10 @@ export class OpenCodeClient {
   async listProviders(): Promise<Array<{ provider: string; model: string }>> {
     try {
       const response = await this.get('/config/providers');
-      return (response as any).providers ?? [];
+      if (!isProvidersResponse(response)) {
+        return [];
+      }
+      return response.providers;
     } catch (err) {
       throw this.wrapError(err, 'listProviders');
     }
@@ -55,7 +69,10 @@ export class OpenCodeClient {
       const url = new URL('/find/file', this.baseUrl);
       url.searchParams.set('query', query);
       const response = await this.get(url.pathname + url.search);
-      return (response as any).results ?? [];
+      if (!isFilesResponse(response)) {
+        return [];
+      }
+      return response.results;
     } catch (err) {
       throw this.wrapError(err, 'findFiles');
     }
