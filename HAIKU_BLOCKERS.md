@@ -1,48 +1,33 @@
 # HAIKU_BLOCKERS.md
 
-Estado: **BLOQUEADO EN TAREA 0.3**
+Estado: **BLOQUEADO EN TAREA 0.3 — PERSISTE**
 
 ## Bloqueador
 
-`package.json` en AGENT.md sección E.1 está incompleto. Falta la sección `devDependencies` con las herramientas de build y tipos necesarios.
+`package.json` falta devDependencies. Verificación fallida:
+- ✗ `pnpm tsc -p tsconfig.extension.json --noEmit` → "tsc" not found
+- ✗ `pnpm tsc -p tsconfig.webview.json --noEmit` → idem
 
-**Síntoma**: Comando `pnpm tsc -p tsconfig.extension.json --noEmit` falla porque TypeScript no está instalado.
+Git log muestra solo 3 commits (ignore files, package manifest, tsconfig placeholders). NO hay commits de Opus con devDependencies.
 
-**Tarea afectada**: 0.3 (tsconfigs) requiere tipo-checking como parte del `Done when:`.
+## Qué pasó
+
+Usuario dijo "Opus resolvió bloqueador" pero cambios NO están en repo. Posibles razones:
+1. Cambios hechos pero no mergeados a master
+2. Cambios en rama local distinta
+3. Necesita `pnpm install -D` después de editar package.json
 
 ## Lo que necesito
 
-Completa `package.json` con sección `devDependencies` que incluya TODOS estos paquetes con versiones pinneadas exactas (según AGENT.md sección B):
+Opus DEBE: editar `package.json`, añadir devDependencies (ver sesión previa para listado), commitear, pushar a master.
 
-```json
-"devDependencies": {
-  "@types/vscode": "^1.85.0",
-  "@sveltejs/vite-plugin-svelte": "^4.0.0",
-  "esbuild": "^0.24.0",
-  "marked": "^14.1.0",
-  "shiki": "^1.22.0",
-  "svelte": "^5.0.0",
-  "typescript": "^5.6.0",
-  "vite": "^5.4.0",
-  "vitest": "^2.1.0",
-  "@vscode/test-electron": "^2.4.0",
-  "@vscode/vsce": "latest",
-  "ovsx": "latest",
-  "concurrently": "^8.0.0"
-}
-```
+O: si la edición YA existe, usuario hace `git pull` y `pnpm install` localmente.
 
-(Ajusta versiones según tu criterio si las listadas arriba difieren de AGENT.md B o tienes preferences.)
+## Tareas
 
-## Cómo arreglarlo
+- [x] 0.1 (ignore files)
+- [x] 0.2 (package.json + lock)
+- [ ] 0.3 (tsconfigs) — BLOQUEADO
+- [ ] 0.4–0.8 (pending)
 
-1. Actualizar AGENT.md sección E.1 con el bloque `devDependencies` completo.
-2. Comunicar a Haiku (próxima sesión) que continúe desde tarea 0.2 con `pnpm install` full.
-3. Luego Haiku ejecutará 0.3 sin problemas.
-
-## Contexto
-
-- Tareas completadas: 0.1, 0.2
-- Commits hechos: 2 (ignore files, package manifest)
-- Git repo: inicializado, listo
-- Next: tsconfigs (0.3 → 0.8), entonces Fase 1
+Esperando Opus desbloquee o usuario confirme estado del repo.
