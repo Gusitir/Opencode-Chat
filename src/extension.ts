@@ -2,32 +2,54 @@ import * as vscode from 'vscode';
 import { info } from './utils/logger';
 import { ChatViewProvider } from './providers/ChatViewProvider';
 import { registerInstallCommand } from './commands/installOpenCode';
+import { OpenCodeServer } from './server/OpenCodeServer';
+import { OpenCodeClient } from './server/OpenCodeClient';
+import { EventStream } from './server/EventStream';
+
+let server: OpenCodeServer | null = null;
+let stream: EventStream | null = null;
 
 export async function activate(context: vscode.ExtensionContext) {
   info('Activating Opencode Chat extension');
 
-  const provider = new ChatViewProvider(context);
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider('opencodeChat.view', provider)
-  );
+  try {
+    server = new OpenCodeServer();
+    const { port, password } = await server.start();
 
-  registerInstallCommand(context);
+    const baseUrl = `http://127.0.0.1:${port}`;
+    const client = new OpenCodeClient(baseUrl, password);
+    void client;
+    stream = new EventStream(baseUrl, password);
+    stream.start();
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand('opencodeChat.openChat', async () => {
-      info('Command: openChat');
-    }),
-    vscode.commands.registerCommand('opencodeChat.newSession', async () => {
-      info('Command: newSession');
-    }),
-    vscode.commands.registerCommand('opencodeChat.addSelectionToPrompt', async () => {
-      info('Command: addSelectionToPrompt');
-    })
-  );
+    const provider = new ChatViewProvider(context);
+    context.subscriptions.push(
+      vscode.window.registerWebviewViewProvider('opencodeChat.view', provider)
+    );
 
-  info('Opencode Chat extension activated');
+    registerInstallCommand(context);
+
+    context.subscriptions.push(
+      vscode.commands.registerCommand('opencodeChat.openChat', async () => {
+        info('Command: openChat');
+      }),
+      vscode.commands.registerCommand('opencodeChat.newSession', async () => {
+        info('Command: newSession');
+      }),
+      vscode.commands.registerCommand('opencodeChat.addSelectionToPrompt', async () => {
+        info('Command: addSelectionToPrompt');
+      })
+    );
+
+    info('Opencode Chat extension activated');
+  } catch (err) {
+    info(`Activation failed: ${(err as Error).message}`);
+    throw err;
+  }
 }
 
 export function deactivate() {
   info('Deactivating Opencode Chat extension');
+  if (stream) stream.stop();
+  if (server) server.stop();
 }
