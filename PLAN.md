@@ -443,10 +443,10 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
 
-- **Fase**: 3 (Bridge complete, ready for chat MVP)
-- **Última tarea completada**: 3.4 (Ready handshake)
-- **Próxima tarea**: 4.1 (Theme variables)
+- **Fase**: 3 (Bridge complete, en revisión Opus)
+- **Última tarea completada**: 3.4 (Ready handshake) — pero **handshake roto en runtime**, ver AUDIT-5/AUDIT-6
+- **Próxima tarea**: AUDIT-5..AUDIT-9 (ver HAIKU_BLOCKERS.md), después AUDIT-10 (decisión usuario), después 4.1
 - **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4 (22 tareas) + 4 audits
 - **Commits**: 26 commits, ~5.5KB extension.js, ~32KB webview.js
-- **Bloqueos**: SIN BLOQUEOS — ready para UI MVP
-- **Fecha último update**: 2026-05-16 (sesión 2)
+- **Bloqueos**: auditoría Opus sesión 2 — 5 bugs críticos/altos + 1 decisión de usuario
+- **Fecha último update**: 2026-05-16 (audit Opus sesión 2)
