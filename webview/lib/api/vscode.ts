@@ -1,27 +1,6 @@
 declare const acquireVsCodeApi: () => any;
 
-export type WebviewToHost =
-  | { type: 'ready' }
-  | { type: 'sendPrompt'; sessionId: string; text: string; attachments?: string[] }
-  | { type: 'newSession' }
-  | { type: 'switchSession'; sessionId: string }
-  | { type: 'deleteSession'; sessionId: string }
-  | { type: 'renameSession'; sessionId: string; name: string }
-  | { type: 'selectModel'; provider: string; model: string }
-  | { type: 'abort'; sessionId: string }
-  | { type: 'permissionResponse'; requestId: string; decision: 'allow' | 'allow_always' | 'deny' }
-  | { type: 'findFiles'; query: string; requestId: string }
-  | { type: 'openFile'; path: string; line?: number }
-  | { type: 'log'; level: 'info' | 'warn' | 'error'; message: string };
-
-export type HostToWebview =
-  | { type: 'state'; sessions: any[]; currentSessionId: string | null; models: any[]; selectedModel: any }
-  | { type: 'messageDelta'; sessionId: string; messageId: string; part: any }
-  | { type: 'messageDone'; sessionId: string; messageId: string }
-  | { type: 'permissionRequest'; requestId: string; toolName: string; input: unknown }
-  | { type: 'findFilesResult'; requestId: string; results: { path: string; name: string }[] }
-  | { type: 'appendToInput'; text: string }
-  | { type: 'error'; sessionId?: string; message: string };
+import type { WebviewToHost, HostToWebview } from '../../../src/messaging/types';
 
 const api = acquireVsCodeApi();
 const listeners: Map<string, Set<Function>> = new Map();
