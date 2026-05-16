@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { info, error } from './utils/logger';
+import { info } from './utils/logger';
 import { ChatViewProvider } from './providers/ChatViewProvider';
 import { registerInstallCommand } from './commands/installOpenCode';
 
@@ -25,12 +25,7 @@ export async function activate(context: vscode.ExtensionContext) {
     })
   );
 
-  try {
-    // Server will be started in task 2.5
-    info('Opencode Chat extension activated');
-  } catch (err) {
-    error('Failed to activate Opencode Chat', err as Error);
-  }
+  info('Opencode Chat extension activated');
 }
 
 export function deactivate() {
