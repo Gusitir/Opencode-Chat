@@ -443,10 +443,10 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
 
-- **Fase**: 5 (Conectar chat al server — COMPLETADA)
-- **Última tarea completada**: 5.6 Abort + errores
-- **Próxima tarea**: 6.1 ModelSelector
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.6 (40 tareas) + 10 audits
-- **Commits**: 46 commits, ~18KB extension.js, ~81KB webview.js (full UI + streaming)
-- **Bloqueos**: SIN BLOQUEOS — chat MVP funcional end-to-end (crear sesión → enviar prompt → streaming → errores)
-- **Fecha último update**: 2026-05-16 (sesión 3 — 44 tasks done!)
+- **Fase**: 5 (en revisión Opus — typecheck roto)
+- **Última tarea completada**: 5.6 Abort + errores (commiteada, pero typecheck falla)
+- **Próxima tarea**: AUDIT-11..AUDIT-20 (ver HAIKU_BLOCKERS.md), luego 6.1
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.6 (40 tareas) + 10 audits previos
+- **Commits**: 46 commits
+- **Bloqueos**: auditoría Opus sesión 3 — 10 bugs (5 typecheck + 3 runtime + 2 calidad). Build pasa pero `pnpm tsc` falla.
+- **Fecha último update**: 2026-05-16 (audit Opus sesión 3)
