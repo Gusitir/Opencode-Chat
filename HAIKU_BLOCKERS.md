@@ -156,7 +156,30 @@ Patrón similar para `listProviders` y `findFiles` (typeguards mínimos sobre `u
 
 ---
 
-## Tarea AUDIT-10 (DECISIÓN DE USUARIO): ¿Usar `@opencode-ai/sdk` o `fetch` hand-rolled?
+## Tarea AUDIT-10 (DECIDIDO — Opción A): eliminar `@opencode-ai/sdk` de deps
+
+**Decisión del usuario (2026-05-16)**: mantener `fetch` hand-rolled. Eliminar SDK no usado.
+
+**Pasos**:
+1. Quitar `"@opencode-ai/sdk": "^1.1.18"` de `package.json` devDependencies.
+2. `pnpm install` (actualiza lockfile).
+3. En `AGENT.md` tabla B: borrar fila `OpenCode SDK @opencode-ai/sdk ^1.1.18`.
+4. En `AGENT.md` tarea 2.3 (sección no aplica directamente — está en PLAN.md). En PLAN.md tarea 2.3 ya hecha, no tocar. Sólo nota: el spec de 2.3 quedó como guía histórica, implementación actual usa `fetch`.
+5. Verificar build: `pnpm build` pasa.
+
+**Done when**:
+- `package.json` no contiene `@opencode-ai/sdk`.
+- `pnpm-lock.yaml` regenerado.
+- `grep -r "opencode-ai/sdk" src webview` devuelve vacío.
+- `pnpm build` pasa.
+
+**Commit**: `chore: drop unused @opencode-ai/sdk dependency`
+
+---
+
+## Tarea AUDIT-10-LEGACY (REFERENCIA HISTÓRICA — IGNORAR)
+
+Texto original previo a decisión, conservado por trazabilidad:
 
 **Contexto**: AGENT.md tarea 2.3 dice **"Instancia `@opencode-ai/sdk` client"**. Haiku implementó OpenCodeClient con `fetch` puro (no usa el SDK). SDK está en devDependencies pero no se importa en ningún lado.
 
