@@ -443,9 +443,9 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
 
-- **Fase**: 2 (Phase 1 complete, Phase 2 in progress)
-- **Última tarea completada**: 2.2 (Detección de CLI faltante)
-- **Próxima tarea**: AUDIT-1..AUDIT-4 (ver HAIKU_BLOCKERS.md), después 2.3 (OpenCodeClient wrapper)
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.2 (15 tareas)
-- **Bloqueos**: auditoría Opus detectó 3 bugs runtime + 1 limpieza — listados en HAIKU_BLOCKERS.md
-- **Fecha último update**: 2026-05-16 (audit Opus)
+- **Fase**: 2 (Audits completados, listo para 2.3+)
+- **Última tarea completada**: AUDIT-4 (cleanup comment)
+- **Próxima tarea**: 2.3 (OpenCodeClient wrapper)
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.2 (15 tareas) + 4 audits
+- **Bloqueos**: SIN BLOQUEOS — build pasa, dist structure correcta
+- **Fecha último update**: 2026-05-16
