@@ -53,6 +53,7 @@
     "dev": "pnpm build && concurrently \"pnpm watch:host\" \"pnpm watch:webview\"",
     "test": "vitest run",
     "test:e2e": "node ./out/tests/runE2E.js",
+    "verify": "pnpm tsc -p tsconfig.extension.json --noEmit && pnpm tsc -p tsconfig.webview.json --noEmit && pnpm build",
     "package": "vsce package --no-dependencies",
     "publish:vsce": "vsce publish --no-dependencies",
     "publish:ovsx": "ovsx publish --no-dependencies"
