@@ -83,22 +83,32 @@ export class OpenCodeServer {
   private async waitForHealth(port: number, password: string, timeoutMs: number): Promise<void> {
     const url = `http://127.0.0.1:${port}/global/health`;
     const startTime = Date.now();
+    let attempt = 0;
+    let lastStatus: number | string = 'pending';
 
     while (Date.now() - startTime < timeoutMs) {
+      attempt++;
       try {
         const response = await fetch(url, {
           headers: { Authorization: `Basic ${Buffer.from(`opencode:${password}`).toString('base64')}` },
         });
+        lastStatus = response.status;
         if (response.ok) {
-          info('OpenCode server health check passed');
+          info(`OpenCode server health check passed (attempt=${attempt})`);
           return;
         }
-      } catch {
-        // Retry
+        if (attempt === 1 || attempt % 10 === 0) {
+          info(`health attempt=${attempt} status=${response.status}`);
+        }
+      } catch (err) {
+        lastStatus = (err as Error).message;
+        if (attempt === 1 || attempt % 10 === 0) {
+          info(`health attempt=${attempt} error=${(err as Error).message}`);
+        }
       }
       await new Promise((resolve) => setTimeout(resolve, 200));
     }
 
-    throw new Error(`OpenCode server health check failed after ${timeoutMs}ms`);
+    throw new Error(`OpenCode server health check failed after ${timeoutMs}ms (attempts=${attempt}, last=${lastStatus})`);
   }
 }
