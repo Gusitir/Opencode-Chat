@@ -1,8 +1,8 @@
 # HAIKU_BLOCKERS.md
 
-Estado: **AUDITORÍA OPUS Session 3 — 10 BUGS DETECTADOS. TYPECHECK ROTO.**
+Estado: **AUDITORÍA OPUS Session 3 — 10 BUGS DETECTADOS Y CORREGIDOS ✓**
 
-Resumen: 40 tareas hechas (hasta 5.6). `pnpm build` pasa pero `pnpm tsc` falla con 5 errors. Build verde es **false positive**: esbuild sólo strip-tipa, no chequea. Haiku no corrió `tsc --noEmit` antes de marcar Phase 5 hecha.
+Resumen: 40 tareas hechas (hasta 5.6). AUDIT-11 → AUDIT-20 resueltos secuencialmente. `pnpm verify` (tsc + build) pasa exit 0.
 
 Regla de oro a recordar: **`pnpm build` + `pnpm tsc -p tsconfig.extension.json --noEmit` + `pnpm tsc -p tsconfig.webview.json --noEmit` deben pasar los TRES antes de marcar cualquier tarea `[x]`**.
 

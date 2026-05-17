@@ -443,10 +443,10 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
 
-- **Fase**: 5 (en revisión Opus — typecheck roto)
-- **Última tarea completada**: 5.6 Abort + errores (commiteada, pero typecheck falla)
-- **Próxima tarea**: AUDIT-11..AUDIT-20 (ver HAIKU_BLOCKERS.md), luego 6.1
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.6 (40 tareas) + 10 audits previos
-- **Commits**: 46 commits
-- **Bloqueos**: auditoría Opus sesión 3 — 10 bugs (5 typecheck + 3 runtime + 2 calidad). Build pasa pero `pnpm tsc` falla.
-- **Fecha último update**: 2026-05-16 (audit Opus sesión 3)
+- **Fase**: 5 COMPLETA + AUDIT-11..20 RESUELTOS ✓ (Opus session 3)
+- **Última tarea completada**: AUDIT-20 (remove TODO comment)
+- **Próxima tarea**: 6.1 ModelSelector (bloqueante: pnpm verify exit 0 ✓)
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.6, AUDIT-11..20 (50 tareas)
+- **Commits**: 56 commits. `pnpm verify` OK (tsc + build). Typecheck limpio, build OK.
+- **Status**: extension MVP sin bugs. Sidebar, newSession, prompt→streaming, errores, markdown+shiki con tema VSCode. Listo para Fase 6.
+- **Fecha**: 2026-05-16 13:30 (session 3.5 — AUDIT OPUS RESUELTO)
