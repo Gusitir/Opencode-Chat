@@ -11,7 +11,9 @@
   let html = $state('');
 
   onMount(async () => {
-    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark =
+      document.body.classList.contains('vscode-dark') ||
+      document.body.classList.contains('vscode-high-contrast');
     const theme = isDark ? 'vitesse-dark' : 'vitesse-light';
 
     try {
