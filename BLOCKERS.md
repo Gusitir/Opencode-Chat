@@ -29,6 +29,20 @@ Audiencia: **Sonnet (ejecutor)**. Opus añade bugs aquí. Sonnet limpia uno por 
 
 ---
 
+## AUDIT-23 RESUELTO ✓ (Opus emergencia, Windows): spawn no resuelve `.cmd` shims
+
+**Síntoma**: F5 → activación falla con `OpenCode server health check failed after 10000ms`. CLI instalada (`opencode --version` → 1.15.0). Server arranca correctamente desde terminal manual.
+
+**Causa**: en Windows, `npm install -g` crea shims `.cmd` (`opencode.cmd`). `child_process.spawn('opencode', args)` sin `shell: true` falla silente: Node no resuelve la extensión `.cmd` automáticamente. Proceso nunca arranca, OutputChannel no captura stdout/stderr porque no hay proceso.
+
+**Fix**: `OpenCodeServer.ts:18` agregar `shell: process.platform === 'win32'` al options de spawn. También subir timeout de health de 10s a 15s (algunos Windows tardan en levantar DB + migrations).
+
+**Done when**: F5 sin error de health, sidebar carga, OutputChannel muestra `opencode server listening on http://127.0.0.1:<port>`.
+
+**Commit**: `fix: enable shell on windows spawn + bump health timeout`
+
+---
+
 ## AUDIT-22 RESUELTO ✓ (Opus emergencia, runtime crítico): ESM/CJS mismatch en extension host
 
 **Síntoma**: F5 abre Extension Development Host, activación de `Gusitir.opencode-chat` falla con:

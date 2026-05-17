@@ -18,6 +18,7 @@ export class OpenCodeServer {
     this.process = child_process.spawn(cfg.cliPath, ['serve', '--port', String(port), '--hostname', '127.0.0.1'], {
       env: { ...process.env, OPENCODE_SERVER_PASSWORD: password },
       stdio: ['ignore', 'pipe', 'pipe'],
+      shell: process.platform === 'win32',
     });
 
     this.process.stdout?.on('data', (data) => {
@@ -42,7 +43,7 @@ export class OpenCodeServer {
       error('OpenCode process error', err);
     });
 
-    await this.waitForHealth(port, password, 10000);
+    await this.waitForHealth(port, password, 15000);
 
     return { port, password };
   }
