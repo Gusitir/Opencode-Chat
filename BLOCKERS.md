@@ -29,6 +29,25 @@ Audiencia: **Sonnet (ejecutor)**. Opus añade bugs aquí. Sonnet limpia uno por 
 
 ---
 
+## AUDIT-22 RESUELTO ✓ (Opus emergencia, runtime crítico): ESM/CJS mismatch en extension host
+
+**Síntoma**: F5 abre Extension Development Host, activación de `Gusitir.opencode-chat` falla con:
+```
+ReferenceError: module is not defined in ES module scope
+This file is being treated as an ES module because it has a '.js' file extension
+and package.json contains "type": "module".
+```
+
+**Causa**: root `package.json` tenía `"type": "module"`. Esbuild emite `dist/extension.js` con `format: 'cjs'` (necesario porque VSCode extension host carga vía CommonJS `require`). Node 24 ve `.js` + `"type":"module"` → trata el bundle como ESM → falla en `module.exports`.
+
+**Fix**: borrar `"type": "module"` de root `package.json`. Configs `.mjs` (esbuild, vite) ya son ESM por extensión explícita, no necesitan el flag. Webview lo bundlea Vite aparte.
+
+**Done when**: F5 ya no muestra ReferenceError, sidebar carga.
+
+**Commit**: `fix: drop type:module to keep extension host CJS-compatible`
+
+---
+
 ## AUDIT-21 RESUELTO ✓ (opción A — fetch crudo)
 
 Decisión usuario: mantener `fetch` crudo + type guards. SDK descartado por churn 1.x.
