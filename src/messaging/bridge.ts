@@ -112,41 +112,43 @@ export function createBridge(deps: BridgeDeps) {
     }
   });
 
+  const activeAssistantMessages = new Set<string>();
+
   stream.on('message', (event: unknown) => {
     try {
-      const evt = event as Record<string, unknown>;
-      const sessionId = evt.sessionId as string | undefined;
-      const part = evt.part as unknown;
-      if (!sessionId || !part) return;
+      const evt = event as { payload?: { type?: string; properties?: Record<string, unknown> } };
+      const payload = evt.payload;
+      if (!payload || typeof payload !== 'object') return;
+      const type = payload.type;
+      const props = (payload.properties || {}) as Record<string, unknown>;
+      const sessionId = props.sessionID as string | undefined;
+      if (!sessionId) return;
 
-      if (typeof part === 'object' && part !== null) {
-        const p = part as Record<string, unknown>;
-        if (p.kind === 'text' && typeof p.text === 'string') {
-          const msg: HostToWebview = {
+      switch (type) {
+        case 'message.part.delta': {
+          const field = props.field as string | undefined;
+          if (field !== 'text') return;
+          const messageId = props.messageID as string;
+          const delta = props.delta as string;
+          if (!messageId || typeof delta !== 'string') return;
+          activeAssistantMessages.add(messageId);
+          post({
             type: 'messageDelta',
             sessionId,
-            messageId: (evt.messageId as string) || 'current',
-            part: { kind: 'text', text: p.text },
-          };
-          post(msg);
-        } else if (p.kind === 'tool_call') {
-          const rawStatus = p.status;
-          const status: 'running' | 'done' | 'error' =
-            rawStatus === 'done' || rawStatus === 'error' ? rawStatus : 'running';
-          const msg: HostToWebview = {
-            type: 'messageDelta',
-            sessionId,
-            messageId: (evt.messageId as string) || 'current',
-            part: {
-              kind: 'tool_call',
-              toolId: (p.toolId as string) || '',
-              name: (p.name as string) || '',
-              input: p.input || {},
-              status,
-            },
-          };
-          post(msg);
+            messageId,
+            part: { kind: 'text', text: delta },
+          });
+          break;
         }
+        case 'session.idle': {
+          for (const messageId of activeAssistantMessages) {
+            post({ type: 'messageDone', sessionId, messageId });
+          }
+          activeAssistantMessages.clear();
+          break;
+        }
+        default:
+          break;
       }
     } catch (err) {
       info(`Error processing stream event: ${(err as Error).message}`);

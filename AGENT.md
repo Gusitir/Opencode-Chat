@@ -293,6 +293,15 @@ DO NOT añadir `connect-src` distinto a `'none'` — todo HTTP pasa por el host.
 
 Schema canónico vivo: `GET /doc` (OpenAPI 3.1, requiere Basic auth). Antes de cambiar payloads, consultar el schema real ahí — NO confiar en esta tabla ciegamente (AUDIT-28).
 
+**SSE `/global/event` payload shape**: cada evento llega como `data: {payload: {type, properties}}` (event name SSE = default `message`). Tipos relevantes:
+- `message.part.delta`: `{sessionID, messageID, partID, field:'text', delta:'<chunk>'}` → render incremental
+- `message.part.updated`: `{sessionID, part:{type,text,messageID,sessionID,id}}` → part final
+- `message.updated`: `{sessionID, info:{id,role,sessionID,...}}` → metadata mensaje
+- `session.idle`: `{sessionID}` → fin de respuesta
+- `session.status`: `{sessionID, status:{type:'busy'|'idle'}}` → estado
+
+Bridge debe hacer `switch(payload.type)` sobre el campo top-level, no buscar `sessionId`/`part.kind` directos (AUDIT-29).
+
 **POST /session/:id/message** body shape:
 ```json
 {

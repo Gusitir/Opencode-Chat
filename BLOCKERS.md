@@ -29,6 +29,29 @@ Audiencia: **Sonnet (ejecutor)**. Opus añade bugs aquí. Sonnet limpia uno por 
 
 ---
 
+## AUDIT-29 RESUELTO ✓ (Opus emergencia, SSE shape): bridge no procesaba eventos del server
+
+**Síntoma**: server stream emite ~30 `message.part.delta` (LLM respondió bien), webview no renderiza nada. Input enviado tampoco aparece (sin mensaje user visible).
+
+**Causa raíz**: bridge `stream.on('message', ...)` esperaba `{sessionId, part:{kind:'text',text}}` top-level. Schema real del endpoint `/global/event` es `{payload:{type:'<event>', properties:{...}}}`. Todos los eventos pasaban sin matchear. Cero `messageDelta` posteado al webview.
+
+Eventos relevantes capturados (con `curl -N` al endpoint):
+- `message.part.delta`: `{sessionID, messageID, partID, field:'text', delta:'<chunk>'}`
+- `session.idle`: `{sessionID}` (fin de respuesta)
+- `message.updated`, `session.updated`, etc. (no usados en MVP)
+
+**Fix bridge**: switch sobre `payload.type`. Map `message.part.delta` (field='text') → `messageDelta {kind:'text', text:delta}`. En `session.idle` emitir `messageDone` para cada messageID activo trackeado.
+
+**Fix webview**: `InputBar.sendMessage` añade el mensaje user al `messagesStore` localmente ANTES de enviar al host. Server no emite eventos para el mensaje user de forma que el webview pueda renderizarlo en tiempo real, así que necesario optimistic update.
+
+AGENT.md E.4 actualizada con SSE shape + tipos relevantes.
+
+**Done when**: enviar prompt muestra burbuja user inmediata, respuesta assistant streamea token a token.
+
+**Commit**: `fix: handle real SSE event shape + optimistic user message`
+
+---
+
 ## AUDIT-28 RESUELTO ✓ (Opus emergencia, API schema): sendPrompt body shape + launch.json workspace
 
 **Síntomas**:

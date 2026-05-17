@@ -1,6 +1,7 @@
 <script lang="ts">
   import { send } from '../api/vscode';
   import { sessionStore } from '../stores/session.svelte';
+  import { messagesStore } from '../stores/messages.svelte';
   import type { WebviewToHost } from '../../../src/messaging/types';
 
   let text = $state('');
@@ -21,11 +22,18 @@
   }
 
   function sendMessage() {
-    if (!text.trim() || !sessionStore.currentSessionId) return;
+    const trimmed = text.trim();
+    if (!trimmed || !sessionStore.currentSessionId) return;
+    messagesStore.addMessage({
+      id: `local-${Date.now()}`,
+      sessionId: sessionStore.currentSessionId,
+      role: 'user',
+      parts: [{ kind: 'text', text: trimmed }],
+    });
     const msg: WebviewToHost = {
       type: 'sendPrompt',
       sessionId: sessionStore.currentSessionId,
-      text,
+      text: trimmed,
     };
     send(msg);
     text = '';
