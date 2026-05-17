@@ -29,6 +29,20 @@ Audiencia: **Sonnet (ejecutor)**. Opus añade bugs aquí. Sonnet limpia uno por 
 
 ---
 
+## AUDIT-25 RESUELTO ✓ (Opus emergencia, webview): asset URLs no resolvían
+
+**Síntoma**: sidebar abre vacío (panel negro, sin contenido). Host log muestra activación completa, SSE conectado, `ChatViewProvider resolved`. Pero webview no renderiza.
+
+**Causa**: `ChatViewProvider.resolveWebviewView` reescribía `src="./assets/..."` prepending `cspSource`. `cspSource` es identificador para CSP origin, NO base URL de recursos. Asset URLs resultantes (`https://*.vscode-webview.net/./assets/foo.js`) fallaban a cargar → script nunca corría → `mount(App)` nunca ejecutaba → div#app vacío.
+
+**Fix**: usar `webview.asWebviewUri(Uri.file(distWebview))` como base. Reescribir cada `(src|href)="./..."` con `baseUri + relativa`. Log del baseUri en consola para debug futuro.
+
+**Done when**: F5 muestra contenido webview ("Connected" tras handshake).
+
+**Commit**: `fix: use asWebviewUri for webview asset base`
+
+---
+
 ## AUDIT-24 RESUELTO ✓ (Opus emergencia, auth): username Basic auth incorrecto
 
 **Síntoma**: spawn OK, server escucha en `127.0.0.1:<port>`, log muestra `opencode server listening`. Pero `/global/health` retorna 401 → waitForHealth timeout 15s.
