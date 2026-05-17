@@ -1,6 +1,19 @@
-# AGENT.md — Contexto persistente para Claude Haiku
+# AGENT.md — Contexto persistente (Opus plan + Sonnet exec)
 
-> **LEE ESTE ARCHIVO COMPLETO AL INICIO DE CADA SESIÓN.** Es la fuente de verdad. NO interpretar, NO improvisar, NO añadir features no listadas. Las tareas a ejecutar viven en `PLAN.md`.
+> **LEE ESTE ARCHIVO COMPLETO AL INICIO DE CADA SESIÓN.** Fuente de verdad. NO interpretar, NO improvisar, NO añadir features no listadas. Tareas viven en `PLAN.md`. Blockers/audits viven en `BLOCKERS.md`.
+
+## A.0 ROLES Y RAZONAMIENTO
+
+| Agente | IDE | Razonamiento | Función |
+|---|---|---|---|
+| **Opus 4.7** | Claude Code (terminal) | **high** (default) | Planificar, auditar diffs, debug duro, refinar AGENT/PLAN/BLOCKERS, cerrar fase con review |
+| **Opus 4.7** | Claude Code | **max** (ephemeral) | Solo refactor crítico o bug raro. Volver a `high` después |
+| **Sonnet 4.6** | VSCodium (extensión Claude) | **medium** (default) | Ejecutar tareas atómicas de PLAN.md. Editar archivos, commitear |
+| **Sonnet 4.6** | VSCodium | **high** (ephemeral) | Solo si `Done when` falla o debug. Volver a `medium` |
+
+**Regla**: Sonnet NO planea features, NO añade tareas a PLAN.md, NO modifica AGENT.md sin permiso. Opus NO ejecuta tareas atómicas salvo emergencia.
+
+**Comando obligatorio antes de marcar `[x]`**: `pnpm verify` (typecheck host + webview + build). Exit 0 los tres. `pnpm build` solo NO basta — esbuild no chequea tipos.
 
 ---
 
@@ -325,7 +338,7 @@ Prohibido `new App({target})` (API Svelte 4 deprecada).
 7. Sin librerías UI externas (no MUI, no Tailwind, no shadcn). CSS plano.
 8. Sin telemetría, sin tracking, sin red salvo el server local.
 9. Commits: convencional (`feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`). UNO por tarea de PLAN.
-10. Después de cada tarea: ejecutar `pnpm build` localmente. Si falla, arreglar antes de marcar `[x]`.
+10. Después de cada tarea: ejecutar `pnpm verify` (typecheck host + webview + build). Si CUALQUIERA falla, arreglar antes de marcar `[x]`. `pnpm build` solo NO basta.
 
 ## G. SETTINGS DE USUARIO EXPUESTAS
 
@@ -336,16 +349,26 @@ Prohibido `new App({target})` (API Svelte 4 deprecada).
 | `opencodeChat.defaultModel` | string | `""` | `provider/model` |
 | `opencodeChat.autoApproveTools` | string[] | `[]` | Tools pre-aprobadas |
 
-## H. WORKFLOW HAIKU (cómo trabajar)
+## H. WORKFLOW SONNET (ejecución)
 
 1. Leer **AGENT.md** completo al inicio de cada sesión.
-2. Abrir **PLAN.md**, buscar la primera tarea sin `[x]`.
-3. Leer el bloque de la tarea entero (`Goal`, `Files`, `Steps`, `Done when`, `Commit`).
-4. Ejecutar SOLO esa tarea. NO mezclar tareas.
-5. Verificar el criterio `Done when`. Si no pasa, NO marcar como hecha.
-6. Marcar `[x]` y hacer `git commit` con el mensaje sugerido en la tarea.
-7. Actualizar la sección "ESTADO ACTUAL" al final de `PLAN.md` (fase, última tarea hecha, fecha).
-8. Detener y reportar si: (a) una dependencia falla install, (b) un endpoint del server responde distinto a E.4, (c) la tarea pide algo ambiguo.
+2. Leer **BLOCKERS.md**. Si tiene tareas pendientes (AUDIT-*), ejecutarlas ANTES que PLAN.md.
+3. Abrir **PLAN.md**, buscar primera tarea sin `[x]`.
+4. Leer bloque entero (`Goal`, `Files`, `Steps`, `Done when`, `Commit`).
+5. Ejecutar SOLO esa tarea. NO mezclar.
+6. Correr `pnpm verify`. Si falla, arreglar. NO marcar `[x]` hasta exit 0.
+7. Verificar `Done when` manual si la tarea lo pide (F5, runtime).
+8. Marcar `[x]` + `git commit` con mensaje sugerido.
+9. Actualizar "ESTADO ACTUAL" al final de `PLAN.md`.
+10. Parar + reportar a Opus si: (a) dependencia falla install, (b) endpoint OpenCode distinto a E.4, (c) tarea ambigua, (d) `pnpm verify` falla y no es trivial.
+
+## H.1 WORKFLOW OPUS (plan/audit)
+
+1. Sesión nueva: leer AGENT.md + PLAN.md (ESTADO ACTUAL) + BLOCKERS.md.
+2. Si BLOCKERS.md vacío + fase cerrada: planear siguiente fase, refinar PLAN.md si hace falta.
+3. Si Sonnet pidió ayuda: investigar root cause, escribir tarea AUDIT-N en BLOCKERS.md.
+4. Al cerrar fase: auditar diff de la fase entera (`git log --oneline phase-start..HEAD`), correr `pnpm verify`, listar bugs en BLOCKERS.md.
+5. NO editar código de feature salvo emergencia. Tu output principal son los .md.
 
 **Prohibiciones absolutas**:
 - NO ejecutar `git push` sin permiso del usuario.
@@ -374,15 +397,7 @@ Estas skills están instaladas en `~/.claude/skills/`. Usar SOLO cuando la situa
 
 ## J. MEJORA PENDIENTE — Skill custom de runner
 
-**Recomendación de Opus (no es tarea de Haiku)**: el workflow descrito en sección H se repite ~60 veces (una por tarea de PLAN.md). Esto es candidato ideal para una skill custom que el usuario puede generar con `/skill-creator` en una sesión separada con Opus.
-
-**Skill propuesta**: `opencode-chat-runner`
-- **Disparador**: el usuario escribe `/opencode-chat-runner` al inicio de una sesión de Haiku.
-- **Comportamiento**: lee `AGENT.md` → busca primera tarea sin `[x]` en `PLAN.md` → ejecuta los `Steps` → verifica `Done when` → marca `[x]` → hace commit con el mensaje sugerido → actualiza "ESTADO ACTUAL" → si quedan tareas en la fase, pasa a la siguiente; si terminó la fase, se detiene y reporta.
-- **Beneficio**: elimina el prompt manual de handoff. Cada sesión arranca con un solo comando.
-- **Cuándo crearla**: después de que Haiku complete la Fase 0 (ya con scaffolding probado). Antes es prematuro porque podríamos descubrir que el flow necesita ajustes.
-
-Haiku NO debe intentar crear esta skill por su cuenta — requiere taste de diseño y debe nacer en sesión con Opus + el usuario.
+Candidato a skill `opencode-chat-runner`: lee AGENT.md + BLOCKERS.md + PLAN.md → ejecuta primera tarea pendiente → `pnpm verify` → marca `[x]` → commit → update ESTADO ACTUAL. Crear cuando flujo Sonnet estabilice. Solo Opus + usuario, no Sonnet por su cuenta.
 
 ## K. RECURSOS EXTERNOS
 

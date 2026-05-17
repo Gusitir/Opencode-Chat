@@ -1,6 +1,6 @@
-# PLAN.md — Tareas atómicas para Claude Haiku
+# PLAN.md — Tareas atómicas para Sonnet (ejecución)
 
-> **Antes de empezar**: leer `AGENT.md` completo. Ejecutar tareas en orden estricto. Una sola tarea por sesión si es necesario. Marcar `[x]` SOLO cuando `Done when` pasa. Hacer commit con el mensaje sugerido. Actualizar "ESTADO ACTUAL" al final.
+> **Antes de empezar**: leer `AGENT.md` + `BLOCKERS.md` completos. Si BLOCKERS tiene tareas AUDIT-* pendientes, ejecutarlas ANTES de PLAN.md. Orden estricto. Marcar `[x]` SOLO si `pnpm verify` pasa Y `Done when` pasa. Commit con mensaje sugerido. Actualizar "ESTADO ACTUAL" al final.
 
 Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:` + `Commit:`.
 
@@ -441,12 +441,13 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ---
 
-## ESTADO ACTUAL (Haiku actualiza esto al final de cada sesión)
+## ESTADO ACTUAL (Sonnet actualiza al final de cada sesión)
 
-- **Fase**: 5 (en revisión Opus — typecheck roto)
-- **Última tarea completada**: 5.6 Abort + errores (commiteada, pero typecheck falla)
-- **Próxima tarea**: AUDIT-11..AUDIT-20 (ver HAIKU_BLOCKERS.md), luego 6.1
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.6 (40 tareas) + 10 audits previos
-- **Commits**: 46 commits
-- **Bloqueos**: auditoría Opus sesión 3 — 10 bugs (5 typecheck + 3 runtime + 2 calidad). Build pasa pero `pnpm tsc` falla.
-- **Fecha último update**: 2026-05-16 (audit Opus sesión 3)
+- **Fase**: 5 cerrada falsa — typecheck roto, audits pendientes
+- **Última tarea commiteada**: 5.6 Abort + errores
+- **Próxima tarea**: AUDIT-11..AUDIT-20 (ver `BLOCKERS.md`), luego 6.1
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.6 (40) + 10 audits previos
+- **Commits**: 46
+- **Bloqueos**: 10 bugs auditoría Opus sesión 3 (5 typecheck + 3 runtime + 2 calidad). `pnpm build` pasa, `pnpm typecheck` falla.
+- **Workflow nuevo**: Opus (Claude Code, high) planea y audita. Sonnet (VSCodium, medium) ejecuta. `pnpm verify` obligatorio antes de `[x]`.
+- **Fecha último update**: 2026-05-16 (rename HAIKU_BLOCKERS → BLOCKERS, workflow Opus+Sonnet)

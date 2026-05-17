@@ -1,12 +1,14 @@
-# HAIKU_BLOCKERS.md
+# BLOCKERS.md
 
 Estado: **AUDITORÍA OPUS Session 3 — 10 BUGS DETECTADOS. TYPECHECK ROTO.**
 
-Resumen: 40 tareas hechas (hasta 5.6). `pnpm build` pasa pero `pnpm tsc` falla con 5 errors. Build verde es **false positive**: esbuild sólo strip-tipa, no chequea. Haiku no corrió `tsc --noEmit` antes de marcar Phase 5 hecha.
+Audiencia: **Sonnet (ejecutor)**. Opus añade bugs aquí. Sonnet los limpia uno a uno con commit individual.
 
-Regla de oro a recordar: **`pnpm build` + `pnpm tsc -p tsconfig.extension.json --noEmit` + `pnpm tsc -p tsconfig.webview.json --noEmit` deben pasar los TRES antes de marcar cualquier tarea `[x]`**.
+Resumen: 40 tareas hechas (hasta 5.6). `pnpm build` pasa pero `pnpm typecheck` falla con 5 errors. Build verde = **false positive**: esbuild strip-tipa, no chequea types. Fase 5 marcada cerrada sin correr `tsc --noEmit`.
 
-Arreglar AUDIT-11 → AUDIT-20 antes de Fase 6.
+**Regla oro**: `pnpm verify` (= `pnpm typecheck && pnpm build`) DEBE retornar exit 0 antes de marcar `[x]`. Script ya en `package.json`.
+
+Arreglar AUDIT-11 → AUDIT-20 en orden antes de Fase 6.
 
 ---
 
@@ -214,12 +216,10 @@ O mejor, key compuesta si hay riesgo de reordenamiento. Por ahora con append-onl
 Antes de marcar Phase 5 cerrada y pasar a Phase 6, ejecutar OBLIGATORIO:
 
 ```
-pnpm build
-pnpm tsc -p tsconfig.extension.json --noEmit
-pnpm tsc -p tsconfig.webview.json --noEmit
+pnpm verify
 ```
 
-Los TRES deben terminar con exit 0. Si alguno falla, NO marcar audits hechos.
+Exit 0. Si falla, NO marcar audits hechos.
 
 F5 manual:
 - Sidebar abre, "Connected" aparece.
@@ -233,14 +233,26 @@ Si algo falla en runtime, parar y reportar en este archivo antes de Phase 6.
 
 ---
 
-## Recordatorio sobre el flujo
+## Tarea AUDIT-21 (MEDIA, divergencia spec): SDK vs fetch crudo
 
-A partir de ahora, **antes de hacer commit de cualquier tarea**, correr los 3 comandos de arriba. `pnpm build` solo NO basta — esbuild transpila sin chequear tipos. Sólo `tsc --noEmit` valida types.
+**Causa**: `src/server/OpenCodeClient.ts` implementa endpoints con `fetch` crudo + type guards. AGENT.md B + E.1 listan `@opencode-ai/sdk ^1.1.18` como dep. Package.json NO lo tiene instalado. Fase 2.3 marcada `[x]` con implementación divergente.
 
-Si Haiku puede crear un script `pnpm verify` que corra los 3 secuencialmente y devuelva exit 0 sólo si pasan todos, agregar al `package.json` scripts. Sugerencia (no obligatoria esta sesión):
+**Decisión necesaria (Opus + usuario, NO Sonnet)**: dos caminos válidos:
 
-```json
-"verify": "pnpm tsc -p tsconfig.extension.json --noEmit && pnpm tsc -p tsconfig.webview.json --noEmit && pnpm build"
-```
+A. **Mantener fetch crudo**: borrar `@opencode-ai/sdk` de AGENT.md tabla B y E.1. Justificación: menos peso de bundle, control total de errores, no acoplado a SDK que cambia mucho.
 
-Opcional, se puede agregar como tarea aparte después de los audits.
+B. **Adoptar SDK**: `pnpm add -D @opencode-ai/sdk@^1.1.18`, reescribir `OpenCodeClient.ts` con métodos del SDK. Justificación: mantenimiento + types oficiales.
+
+**Recomendación Opus**: opción A. SDK aún 1.x, churn alto. Fetch crudo ya funciona. Eliminar la línea del SDK de AGENT.md.
+
+**Done when**: AGENT.md consistente con código (sin `@opencode-ai/sdk` si opción A), o SDK instalado + usado (opción B).
+
+**Commit**: `docs: drop @opencode-ai/sdk from agent spec` (si A).
+
+---
+
+## Recordatorio flujo
+
+`pnpm verify` antes de cada commit. Script ya añadido (`pnpm typecheck && pnpm build`).
+
+Si Sonnet detecta un bug fuera de PLAN.md mientras ejecuta una tarea: NO arreglar inline. Añadir entrada AUDIT-N aquí (formato igual a los existentes) y reportar a Opus. Opus decide prioridad.

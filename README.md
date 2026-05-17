@@ -30,7 +30,7 @@ VSCode/VSCodium <-> Extension Host <-> opencode serve <-> LLM provider
 
 ## Development
 
-This project is built by Claude (Opus + Haiku) following the spec in [AGENT.md](./AGENT.md) and the task list in [PLAN.md](./PLAN.md). Contributions should follow the same workflow.
+This project is built by Claude (Opus 4.7 plans + Sonnet 4.6 executes) following the spec in [AGENT.md](./AGENT.md), task list in [PLAN.md](./PLAN.md) and pending audits in [BLOCKERS.md](./BLOCKERS.md). Contributions should follow the same workflow.
 
 ```bash
 pnpm install
