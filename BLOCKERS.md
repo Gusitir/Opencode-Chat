@@ -1,6 +1,6 @@
 # BLOCKERS.md
 
-Estado: **Sesión 3 cerrada ✓ — Sesión 4 abierta (AUDIT-21 pendiente decisión).**
+Estado: **Sesión 3 cerrada ✓ — AUDIT-21 resuelto (opción A) ✓ — Solo F5 manual pendiente antes de Fase 6.**
 
 Audiencia: **Sonnet (ejecutor)**. Opus añade bugs aquí. Sonnet limpia uno por uno con commit individual. `pnpm verify` exit 0 antes de marcar resuelto.
 
@@ -29,21 +29,16 @@ Audiencia: **Sonnet (ejecutor)**. Opus añade bugs aquí. Sonnet limpia uno por 
 
 ---
 
-## Tarea AUDIT-21 (MEDIA, decisión usuario): SDK vs fetch crudo
+## AUDIT-21 RESUELTO ✓ (opción A — fetch crudo)
 
-**Causa**: `src/server/OpenCodeClient.ts` implementa endpoints con `fetch` crudo + type guards. AGENT.md B + E.1 listan `@opencode-ai/sdk ^1.1.18` como dep. Package.json NO lo tiene. Fase 2.3 marcada `[x]` con implementación divergente.
+Decisión usuario: mantener `fetch` crudo + type guards. SDK descartado por churn 1.x.
 
-**Decisión usuario, NO Sonnet**:
+Aplicado en AGENT.md:
+- Tabla B: línea SDK → `fetch nativo + type guards`
+- E.1 devDependencies: `@opencode-ai/sdk` removido
+- K Recursos: link SDK marcado como no usado
 
-A. **Mantener fetch crudo**: borrar `@opencode-ai/sdk` de AGENT.md tabla B y E.1. Menos bundle, control de errores, no acoplado a SDK 1.x.
-
-B. **Adoptar SDK**: `pnpm add -D @opencode-ai/sdk@^1.1.18`, reescribir `OpenCodeClient.ts` con métodos del SDK. Types oficiales.
-
-**Recomendación Opus**: A. SDK aún 1.x con churn alto. Fetch crudo funciona y type guards locales.
-
-**Done when**: AGENT.md consistente con código (sin SDK si A), o SDK instalado + usado (B).
-
-**Commit (A)**: `docs: drop @opencode-ai/sdk from agent spec`.
+`pnpm verify` exit 0 post-edición.
 
 ---
 

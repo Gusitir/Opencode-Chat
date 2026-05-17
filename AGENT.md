@@ -15,6 +15,24 @@
 
 **Comando obligatorio antes de marcar `[x]`**: `pnpm verify` (typecheck host + webview + build). Exit 0 los tres. `pnpm build` solo NO basta — esbuild no chequea tipos.
 
+### A.0.1 PATH DE TRABAJO (CRÍTICO PARA SONNET)
+
+Repo raíz: `D:\AGUSTIN\Portafolio\Proyectos\Proyecto Extension VSCodeVSCodium\`.
+Branch principal: `master` (worktree raíz).
+Worktrees activos: `.claude/worktrees/<slug>/` con su propio branch `claude/<slug>`.
+
+**Regla Sonnet**:
+
+1. Al abrir VSCodium, mirar `git branch --show-current` y `git worktree list`.
+2. Si el usuario indica branch activo (ej. `claude/wonderful-shamir-a3f245`): abrir VSCodium directamente en el path del worktree (`.claude/worktrees/wonderful-shamir-a3f245/`), NO en el repo raíz.
+3. Si no hay branch indicado: trabajar en `master` (raíz).
+4. NUNCA cambiar de branch ni hacer `git checkout` sin permiso.
+5. NUNCA mezclar commits entre worktrees. Un branch = un worktree.
+6. Antes de empezar tareas: `git status` + `git log --oneline -5` para confirmar HEAD esperado.
+7. Si hay divergencia entre branches (master vs worktree), PARAR. Reportar a Opus. NO mergear ni rebase sin permiso.
+
+**Antecedente**: sesión 3.5 — Sonnet trabajó en `master` ignorando worktree `claude/wonderful-shamir-a3f245`. Opus tuvo que mergear manualmente. NO repetir.
+
 ---
 
 ## A. PROYECTO
@@ -37,7 +55,7 @@
 | Webview framework | Svelte | `^5.0.0` |
 | Webview bundler | Vite | `^5.4.0` |
 | Svelte+Vite plugin | `@sveltejs/vite-plugin-svelte` | `^4.0.0` |
-| OpenCode SDK | `@opencode-ai/sdk` | `^1.1.18` |
+| OpenCode HTTP | `fetch` nativo + type guards | — (decisión AUDIT-21: SDK descartado por churn 1.x) |
 | Markdown | `marked` | `^14.1.0` |
 | Syntax highlight | `shiki` | `^1.22.0` |
 | Test unit | `vitest` | `^2.1.0` |
@@ -206,7 +224,6 @@ Opencode-Chat/
     "publish:ovsx": "ovsx publish --no-dependencies"
   },
   "devDependencies": {
-    "@opencode-ai/sdk": "^1.1.18",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
     "@types/node": "^18.0.0",
     "@types/vscode": "^1.85.0",
@@ -403,7 +420,7 @@ Candidato a skill `opencode-chat-runner`: lee AGENT.md + BLOCKERS.md + PLAN.md �
 
 - **OpenCode docs**: https://opencode.ai/docs/
 - **Server API spec**: `http://localhost:<port>/doc` (OpenAPI 3.1, disponible una vez levantado)
-- **SDK npm**: https://www.npmjs.com/package/@opencode-ai/sdk
+- **SDK npm (no usado, referencia)**: https://www.npmjs.com/package/@opencode-ai/sdk — descartado AUDIT-21
 - **VSCode WebviewView API**: https://code.visualstudio.com/api/references/vscode-api#WebviewViewProvider
 - **CSP for webviews**: https://code.visualstudio.com/api/extension-guides/webview#content-security-policy
 - **Svelte 5 runes**: https://svelte.dev/docs/svelte/what-are-runes
