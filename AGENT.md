@@ -352,7 +352,7 @@ Prohibido `new App({target})` (API Svelte 4 deprecada).
 1. TypeScript `strict: true`. Prohibido `any` (usar `unknown` + narrowing).
 2. Sin comentarios salvo: workaround documentado (link a issue) o invariante no obvio. NO docstrings JSDoc.
 3. Estilos: SOLO variables `var(--vscode-*)` de VSCode. Prohibidos colores hardcoded (excepto `transparent`, `currentColor`).
-4. Svelte 5: usar runes (`$state`, `$derived`, `$effect`), no `$:` ni stores legacy. **Montaje SIEMPRE con `mount(App, {target})` importado de `'svelte'`** — NUNCA `new App(...)` (API Svelte 4, deprecada).
+4. Svelte 5: usar runes (`$state`, `$derived`, `$effect`), no `$:` ni stores legacy. **Montaje SIEMPRE con `mount(App, {target})` importado de `'svelte'`** — NUNCA `new App(...)` (API Svelte 4, deprecada). **Event handlers en lowercase**: `onclick`, `oninput`, `onkeydown` — NUNCA camelCase tipo React (`onClick`/`onInput`/`onKeydown`). camelCase compila silente pero handler NUNCA dispara (AUDIT-26).
 5. Mensajes webview/host: SIEMPRE tipados con discriminated union de `E.2`. Cada handler hace exhaustive switch.
 6. Sin `innerHTML` con datos del LLM. Markdown SOLO vía `marked` + sanitización.
 7. Sin librerías UI externas (no MUI, no Tailwind, no shadcn). CSS plano.

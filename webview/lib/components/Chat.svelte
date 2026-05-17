@@ -23,7 +23,7 @@
 
 <div class="chat">
   <div class="chat-header">
-    <button onClick={handleNewSession} title="Create new session">+</button>
+    <button onclick={handleNewSession} title="Create new session">+</button>
   </div>
   {#if error}
     <div class="error-banner">

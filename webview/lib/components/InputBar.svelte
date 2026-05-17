@@ -37,12 +37,12 @@
   <textarea
     bind:this={textarea}
     bind:value={text}
-    onInput={handleInput}
-    onKeydown={handleKeydown}
+    oninput={handleInput}
+    onkeydown={handleKeydown}
     placeholder="Type a message..."
     disabled={false}
   ></textarea>
-  <button onClick={sendMessage} disabled={!text.trim()}>Send</button>
+  <button onclick={sendMessage} disabled={!text.trim()}>Send</button>
 </div>
 
 <style>

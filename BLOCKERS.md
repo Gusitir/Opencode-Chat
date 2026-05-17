@@ -29,6 +29,24 @@ Audiencia: **Sonnet (ejecutor)**. Opus añade bugs aquí. Sonnet limpia uno por 
 
 ---
 
+## AUDIT-26 RESUELTO ✓ (Opus emergencia, Svelte 5): event handlers camelCase no disparan
+
+**Síntoma**: webview carga, UI renderiza, input acepta texto. Botones "+" y "Send" no responden a click. Ctrl+Enter en textarea no envía.
+
+**Causa**: Svelte 5 espera event handlers en lowercase (`onclick`, `oninput`, `onkeydown`). El código usaba camelCase tipo React (`onClick`, `onInput`, `onKeydown`). camelCase compila sin error/warning porque Svelte lo trata como atributo HTML arbitrario → handler nunca se registra.
+
+Afectados:
+- `Chat.svelte:26` (`onClick`)
+- `InputBar.svelte:40-41,45` (`onInput`, `onKeydown`, `onClick`)
+
+**Fix**: cambiar 4 ocurrencias a lowercase. AGENT.md F.4 actualizado con regla explícita para evitar regresión futura.
+
+**Done when**: clic en "+" crea sesión visible, Send/Ctrl+Enter envía prompt.
+
+**Commit**: `fix: use lowercase svelte 5 event handlers`
+
+---
+
 ## AUDIT-25 RESUELTO ✓ (Opus emergencia, webview): asset URLs no resolvían
 
 **Síntoma**: sidebar abre vacío (panel negro, sin contenido). Host log muestra activación completa, SSE conectado, `ChatViewProvider resolved`. Pero webview no renderiza.
