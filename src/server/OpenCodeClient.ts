@@ -40,10 +40,16 @@ export class OpenCodeClient {
   async sendPrompt(sessionId: string, text: string, model?: string): Promise<void> {
     try {
       const payload: Record<string, unknown> = {
-        messages: [{ role: 'user', content: text }],
+        parts: [{ type: 'text', text }],
       };
       if (model) {
-        payload.model = model;
+        const slash = model.indexOf('/');
+        if (slash > 0) {
+          payload.model = {
+            providerID: model.slice(0, slash),
+            modelID: model.slice(slash + 1),
+          };
+        }
       }
       await this.post(`/session/${sessionId}/message`, payload);
       info(`Prompt sent to session ${sessionId}`);
@@ -86,7 +92,8 @@ export class OpenCodeClient {
       body: JSON.stringify(data),
     });
     if (!response.ok) {
-      throw new OpenCodeError(`HTTP ${response.status}`, 'http_error');
+      const body = await response.text().catch(() => '');
+      throw new OpenCodeError(`HTTP ${response.status} ${path} ${body.slice(0, 300)}`, 'http_error');
     }
     return response.json();
   }
@@ -98,7 +105,8 @@ export class OpenCodeClient {
       headers: this.headers(),
     });
     if (!response.ok) {
-      throw new OpenCodeError(`HTTP ${response.status}`, 'http_error');
+      const body = await response.text().catch(() => '');
+      throw new OpenCodeError(`HTTP ${response.status} ${path} ${body.slice(0, 300)}`, 'http_error');
     }
     return response.json();
   }

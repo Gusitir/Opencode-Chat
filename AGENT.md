@@ -290,6 +290,18 @@ connect-src 'none';
 DO NOT añadir `connect-src` distinto a `'none'` — todo HTTP pasa por el host.
 
 ### E.4 Endpoints OpenCode server usados
+
+Schema canónico vivo: `GET /doc` (OpenAPI 3.1, requiere Basic auth). Antes de cambiar payloads, consultar el schema real ahí — NO confiar en esta tabla ciegamente (AUDIT-28).
+
+**POST /session/:id/message** body shape:
+```json
+{
+  "parts": [{"type": "text", "text": "<user input>"}],
+  "model": {"providerID": "anthropic", "modelID": "claude-sonnet-4-6"}
+}
+```
+`parts` requerido. `model` opcional pero recomendado. NO usar `messages:[{role,content}]` — eso fue intento inicial y devuelve 400 `Missing key at ["parts"]`.
+
 | Método | Path | Uso |
 |---|---|---|
 | GET | `/global/health` | healthcheck al arrancar |

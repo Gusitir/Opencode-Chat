@@ -29,6 +29,28 @@ Audiencia: **Sonnet (ejecutor)**. Opus añade bugs aquí. Sonnet limpia uno por 
 
 ---
 
+## AUDIT-28 RESUELTO ✓ (Opus emergencia, API schema): sendPrompt body shape + launch.json workspace
+
+**Síntomas**:
+1. Log host muestra `cwd=<none>` y server reporta `directory=C:\Program Files\VSCodium`. AUDIT-27 añadió `cwd: workspaceFolders[0]` pero ese array estaba vacío porque la ventana hija F5 abre sin folder.
+2. Send prompt → server responde 400 `WARN service=server kind=Payload reason=Missing key at ["parts"] schema rejection`.
+
+**Causas**:
+1. `.vscode/launch.json` solo pasaba `--extensionDevelopmentPath`, no el folder a abrir. Extension Development Host arranca con workspace vacío.
+2. `OpenCodeClient.sendPrompt` enviaba `{messages:[{role:'user',content:text}]}`. Schema real (`GET /doc`) requiere `{parts:[{type:'text',text}], model:{providerID, modelID}}`.
+
+**Fixes**:
+- `.vscode/launch.json` args: añadir `"${workspaceFolder}"` para que la ventana hija abra con el folder cargado.
+- `OpenCodeClient.sendPrompt`: payload `{parts:[{type:'text',text}]}`; si llega `model="provider/model"`, split en `{providerID, modelID}`.
+- Mejorar mensajes de error: `post()`/`get()` ahora incluyen body de la response en el error (300 chars) → debugging directo en host log.
+- AGENT.md E.4 actualizada con shape canónico + apunta a `GET /doc` como fuente de verdad.
+
+**Done when**: F5 abre ventana hija con worktree folder, `cwd=<worktree>` en log, send prompt no devuelve 400.
+
+**Commit**: `fix: correct sendPrompt schema + open worktree in dev host`
+
+---
+
 ## AUDIT-27 RESUELTO ✓ (Opus emergencia, server config): cwd + plugins externos
 
 **Síntoma**: click "+" alcanza el server (log muestra `service=default creating instance`). Server intenta bootstrappear en `directory=C:\Program Files\VSCodium`. Después carga plugin `opencode-mobile@latest` que pide ngrok authtoken por stdin y se cuelga (stdin está en `'ignore'`).
