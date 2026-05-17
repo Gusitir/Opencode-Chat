@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import { v4 as uuid } from 'uuid';
-import { WebviewToHost, HostToWebview, MessagePart } from './types';
+import { WebviewToHost, HostToWebview } from './types';
 import { info } from '../utils/logger';
 import { OpenCodeClient } from '../server/OpenCodeClient';
 import { SessionStore } from '../providers/SessionStore';
@@ -88,7 +87,6 @@ export function createBridge(deps: BridgeDeps) {
       }
       case 'abort': {
         info(`Abort session: ${msg.sessionId}`);
-        // TODO: implement abort via OpenCode API or signal
         break;
       }
       case 'permissionResponse': {
@@ -132,6 +130,9 @@ export function createBridge(deps: BridgeDeps) {
           };
           post(msg);
         } else if (p.kind === 'tool_call') {
+          const rawStatus = p.status;
+          const status: 'running' | 'done' | 'error' =
+            rawStatus === 'done' || rawStatus === 'error' ? rawStatus : 'running';
           const msg: HostToWebview = {
             type: 'messageDelta',
             sessionId,
@@ -141,7 +142,7 @@ export function createBridge(deps: BridgeDeps) {
               toolId: (p.toolId as string) || '',
               name: (p.name as string) || '',
               input: p.input || {},
-              status: (p.status as string) || 'running',
+              status,
             },
           };
           post(msg);

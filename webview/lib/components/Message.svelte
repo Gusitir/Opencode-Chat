@@ -11,7 +11,7 @@
 </script>
 
 <div class="message {role}">
-  {#each parts as part (part.kind)}
+  {#each parts as part, i (i)}
     {#if part.kind === 'text'}
       <div class="text">
         {@html renderMarkdown(part.text)}

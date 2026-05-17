@@ -1,11 +1,5 @@
 import * as vscode from 'vscode';
-
-interface SessionMeta {
-  id: string;
-  name: string;
-  createdAt: number;
-  updatedAt: number;
-}
+import type { SessionMeta } from '../messaging/types';
 
 const SESSION_KEY = 'sessions';
 

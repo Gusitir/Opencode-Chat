@@ -441,13 +441,13 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ---
 
-## ESTADO ACTUAL (Sonnet actualiza al final de cada sesión)
-
-- **Fase**: 5 cerrada falsa — typecheck roto, audits pendientes
-- **Última tarea commiteada**: 5.6 Abort + errores
-- **Próxima tarea**: AUDIT-11..AUDIT-20 (ver `BLOCKERS.md`), luego 6.1
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.6 (40) + 10 audits previos
-- **Commits**: 46
-- **Bloqueos**: 10 bugs auditoría Opus sesión 3 (5 typecheck + 3 runtime + 2 calidad). `pnpm build` pasa, `pnpm typecheck` falla.
-- **Workflow nuevo**: Opus (Claude Code, high) planea y audita. Sonnet (VSCodium, medium) ejecuta. `pnpm verify` obligatorio antes de `[x]`.
-- **Fecha último update**: 2026-05-16 (rename HAIKU_BLOCKERS → BLOCKERS, workflow Opus+Sonnet)
+- **Fase**: 5 + AUDIT-11..20 RESUELTOS ✓
+- **Última tarea**: AUDIT-20 (`2048c71 chore: remove TODO comment from bridge`)
+- **Pendiente decisión usuario**: AUDIT-21 (SDK vs fetch crudo — ver `BLOCKERS.md`)
+- **Próxima tarea ejecución**: 6.1 ModelSelector (esperar resolución AUDIT-21 + confirmación usuario)
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.6, AUDIT-11..20 (50)
+- **Commits**: ~57 (incluye merge worktree). `pnpm verify` OK en master.
+- **Status**: MVP sin bugs typecheck. Falta F5 manual (requiere `opencode` CLI). Verificación visual pendiente antes de cerrar Fase 5.
+- **Workflow**: Opus (Claude Code, high) plan + audit. Sonnet (VSCodium, medium) ejecuta. `pnpm verify` obligatorio antes de `[x]`.
+- **Nota proceso**: Sonnet trabajó sobre `master` worktree en vez del branch worktree. Próxima sesión: abrir VSCodium en el worktree del branch activo.
+- **Fecha**: 2026-05-16 (AUDIT OPUS sesión 3 cerrada por Sonnet, merge Opus)
