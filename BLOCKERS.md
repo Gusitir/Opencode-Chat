@@ -29,6 +29,26 @@ Audiencia: **Sonnet (ejecutor)**. Opus añade bugs aquí. Sonnet limpia uno por 
 
 ---
 
+## AUDIT-27 RESUELTO ✓ (Opus emergencia, server config): cwd + plugins externos
+
+**Síntoma**: click "+" alcanza el server (log muestra `service=default creating instance`). Server intenta bootstrappear en `directory=C:\Program Files\VSCodium`. Después carga plugin `opencode-mobile@latest` que pide ngrok authtoken por stdin y se cuelga (stdin está en `'ignore'`).
+
+**Causas**:
+1. Spawn sin `cwd` → server usa cwd del extension host (binario VSCodium), no workspace folder.
+2. Sin `--pure` → server carga plugins globales del usuario; algunos (opencode-mobile) bloquean en stdin esperando input interactivo.
+
+**Fix**: en `OpenCodeServer.start`:
+- Resolver `vscode.workspace.workspaceFolders?.[0]?.uri.fsPath` y pasar como `cwd`.
+- Añadir `--pure` a args para skipear plugins externos.
+
+AGENT.md E.5 actualizado.
+
+**Done when**: crear sesión no cuelga, `service=project directory=<workspace>` en logs.
+
+**Commit**: `fix: spawn opencode with workspace cwd and --pure`
+
+---
+
 ## AUDIT-26 RESUELTO ✓ (Opus emergencia, Svelte 5): event handlers camelCase no disparan
 
 **Síntoma**: webview carga, UI renderiza, input acepta texto. Botones "+" y "Send" no responden a click. Ctrl+Enter en textarea no envía.

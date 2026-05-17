@@ -13,13 +13,19 @@ export class OpenCodeServer {
     const port = await this.getFreePort(cfg.serverPort);
     const password = randomUUID();
 
-    info(`Starting OpenCode server: cliPath="${cfg.cliPath}" port=${port} platform=${process.platform}`);
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    info(`Starting OpenCode server: cliPath="${cfg.cliPath}" port=${port} platform=${process.platform} cwd=${workspaceFolder ?? '<none>'}`);
 
-    this.process = child_process.spawn(cfg.cliPath, ['serve', '--port', String(port), '--hostname', '127.0.0.1', '--print-logs'], {
-      env: { ...process.env, OPENCODE_SERVER_PASSWORD: password },
-      stdio: ['ignore', 'pipe', 'pipe'],
-      shell: process.platform === 'win32',
-    });
+    this.process = child_process.spawn(
+      cfg.cliPath,
+      ['serve', '--port', String(port), '--hostname', '127.0.0.1', '--print-logs', '--pure'],
+      {
+        cwd: workspaceFolder,
+        env: { ...process.env, OPENCODE_SERVER_PASSWORD: password },
+        stdio: ['ignore', 'pipe', 'pipe'],
+        shell: process.platform === 'win32',
+      }
+    );
 
     info(`Spawned PID=${this.process.pid ?? 'null'}`);
 

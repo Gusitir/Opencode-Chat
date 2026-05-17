@@ -340,7 +340,8 @@ Prohibido `new App({target})` (API Svelte 4 deprecada).
 - Puerto: `0` en config = elegir libre con `net.createServer().listen(0)`.
 - Password: generar UUID al activar, pasar via `OPENCODE_SERVER_PASSWORD`.
 - **Auth scheme**: HTTP Basic, username = literal `opencode`, password = UUID generado. Sin override de `OPENCODE_SERVER_USERNAME`. Confirmado contra opencode 1.15.0 binary (AUDIT-24).
-- Argumentos: `serve --port <p> --hostname 127.0.0.1 --print-logs`.
+- Argumentos: `serve --port <p> --hostname 127.0.0.1 --print-logs --pure`. `--pure` evita plugins externos del usuario (ej. `opencode-mobile`) que pueden colgar pidiendo input por stdin (AUDIT-27).
+- `cwd`: workspace folder activo (`vscode.workspace.workspaceFolders?.[0]?.uri.fsPath`). Sin esto, server indexa el directorio del extension host (`C:\Program Files\VSCodium`).
 - `stdin: 'ignore'`, capturar `stdout`/`stderr` → OutputChannel. opencode emite logs a stderr; el "listening on" va a stdout.
 - **Windows**: `spawn(..., { shell: process.platform === 'win32' })` para que npm `.cmd` shims se resuelvan (AUDIT-23).
 - `subprocess.kill('SIGTERM')` en `deactivate()` y al evento `process.exit`.
