@@ -104,7 +104,7 @@ export class OpenCodeClient {
   }
 
   private headers(): Record<string, string> {
-    const auth = Buffer.from(`user:${this.password}`).toString('base64');
+    const auth = Buffer.from(`opencode:${this.password}`).toString('base64');
     return {
       'Authorization': `Basic ${auth}`,
       'Content-Type': 'application/json',

@@ -27,7 +27,7 @@ export class EventStream extends EventEmitter {
       try {
         const res = await fetch(`${this.baseUrl}/global/event`, {
           headers: {
-            Authorization: `Basic ${Buffer.from(`user:${this.password}`).toString('base64')}`,
+            Authorization: `Basic ${Buffer.from(`opencode:${this.password}`).toString('base64')}`,
             Accept: 'text/event-stream',
           },
           signal: this.controller.signal,

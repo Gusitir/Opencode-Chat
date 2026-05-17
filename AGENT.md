@@ -339,10 +339,13 @@ Prohibido `new App({target})` (API Svelte 4 deprecada).
 ### E.5 Spawn del server (regla)
 - Puerto: `0` en config = elegir libre con `net.createServer().listen(0)`.
 - Password: generar UUID al activar, pasar via `OPENCODE_SERVER_PASSWORD`.
-- Argumentos: `serve --port <p> --hostname 127.0.0.1`.
-- `stdin: 'ignore'`, capturar `stdout`/`stderr` → OutputChannel.
+- **Auth scheme**: HTTP Basic, username = literal `opencode`, password = UUID generado. Sin override de `OPENCODE_SERVER_USERNAME`. Confirmado contra opencode 1.15.0 binary (AUDIT-24).
+- Argumentos: `serve --port <p> --hostname 127.0.0.1 --print-logs`.
+- `stdin: 'ignore'`, capturar `stdout`/`stderr` → OutputChannel. opencode emite logs a stderr; el "listening on" va a stdout.
+- **Windows**: `spawn(..., { shell: process.platform === 'win32' })` para que npm `.cmd` shims se resuelvan (AUDIT-23).
 - `subprocess.kill('SIGTERM')` en `deactivate()` y al evento `process.exit`.
 - Reintento UNA vez si crashea en los primeros 5 s, después mostrar error UI.
+- Health check timeout: 15s (cold start incluye DB migrations).
 
 ## F. REGLAS DE CÓDIGO (cumplir SIN excepciones)
 

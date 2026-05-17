@@ -29,6 +29,25 @@ Audiencia: **Sonnet (ejecutor)**. Opus añade bugs aquí. Sonnet limpia uno por 
 
 ---
 
+## AUDIT-24 RESUELTO ✓ (Opus emergencia, auth): username Basic auth incorrecto
+
+**Síntoma**: spawn OK, server escucha en `127.0.0.1:<port>`, log muestra `opencode server listening`. Pero `/global/health` retorna 401 → waitForHealth timeout 15s.
+
+**Causa**: opencode 1.15.0 con `OPENCODE_SERVER_PASSWORD` set requiere Basic auth con username default `opencode`, no `user`. Documentación AGENT.md E.5 no especificaba username. Tres archivos usaban `user:${password}`:
+- `src/server/OpenCodeServer.ts:90` (health check)
+- `src/server/OpenCodeClient.ts:107` (HTTP API)
+- `src/server/EventStream.ts:30` (SSE)
+
+Verificación binaria opencode.exe expone `OPENCODE_SERVER_USERNAME` (override) y default `opencode`.
+
+**Fix**: cambiar `user:${password}` → `opencode:${password}` en los 3 archivos. Actualizar AGENT.md E.5 con esquema auth explícito.
+
+**Done when**: F5 activación pasa, OutputChannel muestra `OpenCode server health check passed`, sidebar carga "Connected".
+
+**Commit**: `fix: use 'opencode' as basic auth username`
+
+---
+
 ## AUDIT-23 RESUELTO ✓ (Opus emergencia, Windows): spawn no resuelve `.cmd` shims
 
 **Síntoma**: F5 → activación falla con `OpenCode server health check failed after 10000ms`. CLI instalada (`opencode --version` → 1.15.0). Server arranca correctamente desde terminal manual.

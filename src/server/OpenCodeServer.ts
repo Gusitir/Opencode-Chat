@@ -13,23 +13,26 @@ export class OpenCodeServer {
     const port = await this.getFreePort(cfg.serverPort);
     const password = randomUUID();
 
-    info(`Starting OpenCode server on port ${port}`);
+    info(`Starting OpenCode server: cliPath="${cfg.cliPath}" port=${port} platform=${process.platform}`);
 
-    this.process = child_process.spawn(cfg.cliPath, ['serve', '--port', String(port), '--hostname', '127.0.0.1'], {
+    this.process = child_process.spawn(cfg.cliPath, ['serve', '--port', String(port), '--hostname', '127.0.0.1', '--print-logs'], {
       env: { ...process.env, OPENCODE_SERVER_PASSWORD: password },
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: process.platform === 'win32',
     });
+
+    info(`Spawned PID=${this.process.pid ?? 'null'}`);
 
     this.process.stdout?.on('data', (data) => {
       info(`[opencode stdout] ${data.toString().trim()}`);
     });
 
     this.process.stderr?.on('data', (data) => {
-      error(`[opencode stderr] ${data.toString().trim()}`);
+      info(`[opencode stderr] ${data.toString().trim()}`);
     });
 
     this.process.on('error', (err: NodeJS.ErrnoException) => {
+      error(`[opencode spawn error] code=${err.code ?? '?'} message=${err.message}`);
       if (err.code === 'ENOENT') {
         void vscode.window.showErrorMessage(
           'OpenCode CLI not found',
@@ -40,7 +43,10 @@ export class OpenCodeServer {
           }
         });
       }
-      error('OpenCode process error', err);
+    });
+
+    this.process.on('exit', (code, signal) => {
+      info(`[opencode exit] code=${code} signal=${signal}`);
     });
 
     await this.waitForHealth(port, password, 15000);
@@ -81,7 +87,7 @@ export class OpenCodeServer {
     while (Date.now() - startTime < timeoutMs) {
       try {
         const response = await fetch(url, {
-          headers: { Authorization: `Basic ${Buffer.from(`user:${password}`).toString('base64')}` },
+          headers: { Authorization: `Basic ${Buffer.from(`opencode:${password}`).toString('base64')}` },
         });
         if (response.ok) {
           info('OpenCode server health check passed');
