@@ -10,7 +10,7 @@
   --button-hover-bg: var(--vscode-button-hoverBackground);
   --selection-bg: var(--vscode-editor-selectionBackground);
   --scrollbar: var(--vscode-scrollbarSlider-background);
-  --status-running: var(--vscode-testing-iconQueued, #ffaa00);
-  --status-done: var(--vscode-testing-iconPassed, #00aa00);
-  --status-error: var(--vscode-testing-iconFailed, #aa0000);
+  --status-running: var(--vscode-editorWarning-foreground, #cca700);
+  --status-done: var(--vscode-testing-iconPassed, #73c991);
+  --status-error: var(--vscode-editorError-foreground, #f48771);
 }
