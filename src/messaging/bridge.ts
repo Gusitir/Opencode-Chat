@@ -87,7 +87,6 @@ export function createBridge(deps: BridgeDeps) {
       }
       case 'abort': {
         info(`Abort session: ${msg.sessionId}`);
-        // TODO: implement abort via OpenCode API or signal
         break;
       }
       case 'permissionResponse': {
