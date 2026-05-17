@@ -441,13 +441,15 @@ Formato por tarea: `[ ] N.M Title` + `Goal:` + `Files:` + `Steps:` + `Done when:
 
 ---
 
-- **Fase**: 5 + AUDIT-11..20 RESUELTOS ✓
-- **Última tarea**: AUDIT-20 (`2048c71 chore: remove TODO comment from bridge`)
-- **Pendiente decisión usuario**: AUDIT-21 (SDK vs fetch crudo — ver `BLOCKERS.md`)
-- **Próxima tarea ejecución**: 6.1 ModelSelector (esperar resolución AUDIT-21 + confirmación usuario)
-- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.6, AUDIT-11..20 (50)
-- **Commits**: ~57 (incluye merge worktree). `pnpm verify` OK en master.
-- **Status**: MVP sin bugs typecheck. Falta F5 manual (requiere `opencode` CLI). Verificación visual pendiente antes de cerrar Fase 5.
-- **Workflow**: Opus (Claude Code, high) plan + audit. Sonnet (VSCodium, medium) ejecuta. `pnpm verify` obligatorio antes de `[x]`.
-- **Nota proceso**: Sonnet trabajó sobre `master` worktree en vez del branch worktree. Próxima sesión: abrir VSCodium en el worktree del branch activo.
-- **Fecha**: 2026-05-16 (AUDIT OPUS sesión 3 cerrada por Sonnet, merge Opus)
+## ESTADO ACTUAL (Sonnet actualiza al final de cada sesión)
+
+- **Fase**: 5 cerrada ✓ + 19 audits resueltos (AUDIT-11..29, incluye 9 emergencias runtime Opus).
+- **MVP runtime verificado**: F5 manual end-to-end. Server arranca, sidebar carga, sesión se crea, prompt user aparece optimista, respuesta LLM streamea token-a-token, session.idle cierra mensaje.
+- **Próxima tarea**: **6.1 ModelSelector**. `sendPrompt` actualmente NO pasa model → server cae al `opencode-go/deepseek-v4-pro` bundled. Dropdown desbloquea elegir provider/model real.
+- **Tareas completadas**: 0.1-0.8, 1.1-1.5, 2.1-2.5, 3.1-3.4, 4.1-4.7, 5.1-5.6 + AUDIT-11..29.
+- **Workflow consolidado** (post sesión 3.5):
+  - **Branch único `master`** en raíz del repo. NO worktrees — añadían confusión sin valor para solo dev.
+  - **Opus (Claude Code, high)** = plan + audit + .md edits. Maneja AGENT/PLAN/BLOCKERS.
+  - **Sonnet (VSCodium, medium)** = ejecuta tareas atómicas de PLAN.md sobre `master`. `pnpm verify` exit 0 antes de cada `[x]`.
+- **Lecciones runtime** (en `BLOCKERS.md` sección "Lecciones aprendidas"): consultar antes de modificar spawn, auth, SSE, webview assets o event handlers Svelte.
+- **Fecha último savepoint**: 2026-05-16 (MVP funcional, push origin, cleanup worktrees).

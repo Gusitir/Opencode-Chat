@@ -15,23 +15,18 @@
 
 **Comando obligatorio antes de marcar `[x]`**: `pnpm verify` (typecheck host + webview + build). Exit 0 los tres. `pnpm build` solo NO basta — esbuild no chequea tipos.
 
-### A.0.1 PATH DE TRABAJO (CRÍTICO PARA SONNET)
+### A.0.1 PATH DE TRABAJO
 
-Repo raíz: `D:\AGUSTIN\Portafolio\Proyectos\Proyecto Extension VSCodeVSCodium\`.
-Branch principal: `master` (worktree raíz).
-Worktrees activos: `.claude/worktrees/<slug>/` con su propio branch `claude/<slug>`.
+Repo raíz único: `D:\AGUSTIN\Portafolio\Proyectos\Proyecto Extension VSCodeVSCodium\`.
+Branch único: **`master`**. Push a `origin/master`.
 
 **Regla Sonnet**:
+1. Abrir VSCodium en la raíz del repo. NO usar worktrees — sesión 3.5 demostró que añaden confusión sin valor para solo dev.
+2. Antes de empezar tareas: `git status` + `git log --oneline -5` para confirmar HEAD.
+3. NUNCA cambiar de branch, crear branches nuevos, ni hacer `git checkout` sin permiso.
+4. Si Opus dice "branch X": confirmar primero, NO asumir.
 
-1. Al abrir VSCodium, mirar `git branch --show-current` y `git worktree list`.
-2. Si el usuario indica branch activo (ej. `claude/wonderful-shamir-a3f245`): abrir VSCodium directamente en el path del worktree (`.claude/worktrees/wonderful-shamir-a3f245/`), NO en el repo raíz.
-3. Si no hay branch indicado: trabajar en `master` (raíz).
-4. NUNCA cambiar de branch ni hacer `git checkout` sin permiso.
-5. NUNCA mezclar commits entre worktrees. Un branch = un worktree.
-6. Antes de empezar tareas: `git status` + `git log --oneline -5` para confirmar HEAD esperado.
-7. Si hay divergencia entre branches (master vs worktree), PARAR. Reportar a Opus. NO mergear ni rebase sin permiso.
-
-**Antecedente**: sesión 3.5 — Sonnet trabajó en `master` ignorando worktree `claude/wonderful-shamir-a3f245`. Opus tuvo que mergear manualmente. NO repetir.
+**Antecedente**: sesión 3.5 — Opus creó worktree `claude/wonderful-shamir-a3f245`, Sonnet trabajó en `master`, divergencia. Tras merge a master, ambos worktrees auxiliares eliminados. Workflow ahora single-branch.
 
 ---
 
